@@ -1,4 +1,4 @@
-#Arena X : MultiSport Platform 🏆
+## **Arena X** : MultiSport Platform 🏆
 
 A comprehensive, real-time multi-sport scoring and rankings platform built with the MERN stack and enhanced with GSAP animations.
 
