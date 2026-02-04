@@ -48,23 +48,6 @@ cd multisport-platform
 npm run install:all
 ```
 
-### 3. Environment Setup
-
-#### Server Environment
-```bash
-cd server
-cp env.example .env
-```
-
-Edit `.env` file:
-```env
-PORT=5173
-NODE_ENV=development
-MONGODB_URI=mongodb://localhost:27017/multisport
-JWT_SECRET=your-super-secret-jwt-key-here
-JWT_REFRESH_SECRET=your-super-secret-refresh-key-here
-CORS_ORIGIN=http://localhost:3000
-```
 
 #### Client Environment
 ```bash
@@ -170,28 +153,6 @@ multisport-platform/
 - **Sport Colors**: Unique color schemes per sport
 - **Modern Cards**: Rounded corners, soft shadows, adequate spacing
 
-## 🔌 API Endpoints
-
-### Authentication
-- `POST /api/v1/auth/register` - User registration
-- `POST /api/v1/auth/login` - User login
-- `POST /api/v1/auth/refresh` - Token refresh
-- `POST /api/v1/auth/logout` - User logout
-
-### Matches
-- `GET /api/v1/matches` - List matches
-- `POST /api/v1/matches/:id/score` - Update score (scorer only)
-- `PATCH /api/v1/matches/:id` - Update match details
-
-### Tournaments
-- `GET /api/v1/tournaments` - List tournaments
-- `POST /api/v1/tournaments` - Create tournament (organizer)
-- `POST /api/v1/tournaments/:id/fixtures/generate` - Generate fixtures
-
-### Leaderboards
-- `GET /api/v1/leaderboards` - Get rankings by sport/timeframe
-
-## 📱 Socket Events
 
 ### Client → Server
 - `join_match` - Join match room
@@ -205,18 +166,6 @@ multisport-platform/
 - `match_status_changed` - Status change notification
 - `live_matches_updated` - Live matches update
 
-## 🧪 Testing
-
-```bash
-# Run all tests
-npm test
-
-# Run server tests only
-npm run test:server
-
-# Run client tests only
-npm run test:client
-```
 
 ## 🚀 Deployment
 
@@ -225,18 +174,6 @@ npm run test:client
 npm run build
 ```
 
-### Environment Variables
-Set production environment variables:
-- `NODE_ENV=production`
-- `MONGODB_URI_PROD` for production database
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
 
 ## 🎉 Acknowledgments
 
@@ -246,5 +183,10 @@ Set production environment variables:
 - **MongoDB** for flexible data storage
 
 ---
+## Group Members
+- Jash Agicha - AU2320253
+- Aryan Tarachandani - AU240177
+- Dev Shah - AU2420165
+- Aditya Bhatt - AU2240109
 
 **MultiSport Platform** - Where every sport finds its home! 🏆⚽🏀🎾🏸🏐 
