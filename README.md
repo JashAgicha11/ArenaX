@@ -1,6 +1,6 @@
 ## **Arena X** : MultiSport Platform 🏆
-
-A comprehensive, real-time multi-sport scoring and rankings platform built with the MERN stack and enhanced with GSAP animations.
+# A CSE250 - DBMS Project
+A comprehensive CSE250 Project, Which reflects real-time multi-sport scoring and rankings platform built with the MERN stack and enhanced with GSAP animations.
 
 ## ✨ Features
 
