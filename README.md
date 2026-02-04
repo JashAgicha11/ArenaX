@@ -19,6 +19,7 @@ A comprehensive CSE250 Project, Which reflects real-time multi-sport scoring and
 
 ### Backend
 - **Node.js** + **Express.js**
+- **MariaDB**
 - **MongoDB** + **Mongoose**
 - **Socket.io** for real-time updates
 
