@@ -21,19 +21,13 @@ A comprehensive, real-time multi-sport scoring and rankings platform built with 
 - **Node.js** + **Express.js**
 - **MongoDB** + **Mongoose**
 - **Socket.io** for real-time updates
-- **JWT** authentication with refresh tokens
-- **bcrypt** for password hashing
-- **Winston** for logging
-- **Helmet** + **CORS** for security
 
 ### Frontend
 - **React 18** + **Vite**
 - **Tailwind CSS** for styling
 - **GSAP** for animations
 - **React Router** for navigation
-- **React Query** for state management
-- **Socket.io Client** for real-time features
-- **Lucide React** for icons
+  
 
 ## 📋 Prerequisites
 
@@ -64,7 +58,7 @@ cp env.example .env
 
 Edit `.env` file:
 ```env
-PORT=5000
+PORT=5173
 NODE_ENV=development
 MONGODB_URI=mongodb://localhost:27017/multisport
 JWT_SECRET=your-super-secret-jwt-key-here
@@ -80,18 +74,13 @@ cp .env.example .env
 
 Edit `.env` file:
 ```env
-VITE_API_URL=http://localhost:5000
+VITE_API_URL=http://localhost:5173
 ```
 
 ### 4. Start MongoDB
 ```bash
 # Start MongoDB service
 mongod
-```
-
-### 5. Seed the database
-```bash
-npm run seed
 ```
 
 ### 6. Start the application
@@ -240,14 +229,6 @@ npm run build
 Set production environment variables:
 - `NODE_ENV=production`
 - `MONGODB_URI_PROD` for production database
-- `CORS_ORIGIN_PROD` for production domain
-- `JWT_SECRET` and `JWT_REFRESH_SECRET` for production
-
-### Docker Support
-```bash
-# Build and run with Docker
-docker-compose up --build
-```
 
 ## 🤝 Contributing
 
@@ -257,22 +238,11 @@ docker-compose up --build
 4. Add tests if applicable
 5. Submit a pull request
 
-## 📄 License
-
-This project is licensed under the MIT License.
-
-## 🆘 Support
-
-For support and questions:
-- Create an issue in the repository
-- Check the documentation
-- Review the code examples
-
 ## 🎉 Acknowledgments
 
 - **GSAP** for amazing animations
 - **Tailwind CSS** for utility-first styling
-- **Socket.io** for real-time capabilities
+
 - **MongoDB** for flexible data storage
 
 ---
