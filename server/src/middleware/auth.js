@@ -1,3 +1,21 @@
+/**
+ * Authentication & Authorization Middleware
+ * ------------------------------------------
+ * Handles:
+ * - Access token verification (JWT)
+ * - Refresh token validation
+ * - Role-based access control (RBAC)
+ * - Optional authentication
+ * - Resource ownership checks
+ *
+ * Design:
+ * - Access tokens are verified using JWT_SECRET
+ * - Refresh tokens are validated against stored value in DB
+ * - Role checks are enforced at route level
+ * - Middleware ensures protected routes cannot be accessed anonymously
+ */
+
+
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const logger = require('../utils/logger');
