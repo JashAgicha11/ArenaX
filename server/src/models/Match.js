@@ -1,7 +1,31 @@
+/**
+ * Match Schema
+ * -------------
+ * Represents a single sports match in the system.
+ *
+ * Design Decisions:
+ * - Uses references for Teams, Tournament, and Users to maintain normalization.
+ * - Uses embedded documents for scoringFeed to optimize real-time read performance.
+ * - Uses flexible (Mixed) fields for sport-specific data to support multi-sport architecture.
+ *
+ * This schema is designed to handle cricket, football, basketball, badminton,
+ * tennis, and volleyball under a unified structure.
+ */
+
+
+
 const mongoose = require('mongoose');
 
+// Match schema represents a single sports match.
+// This document stores match metadata, teams, score,
+// and embedded events for fast read performance.
+
 const matchSchema = new mongoose.Schema({
+  
   sportKey: {
+    // Identifies which sport this match belongs to.
+// Enum restriction ensures only supported sports are stored.
+
     type: String,
     required: true,
     enum: ['cricket', 'football', 'basketball', 'badminton', 'tennis', 'volleyball']
@@ -10,6 +34,10 @@ const matchSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Tournament'
   },
+  // Referenced relationships (normalized)
+// Using ObjectId references prevents duplication of team/tournament data
+// and allows population when detailed information is required.
+
   homeTeamId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Team'
@@ -18,6 +46,10 @@ const matchSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Team'
   },
+  
+  // Tracks players participating in this match.
+// Stored as embedded subdocuments because participation is match-specific.
+
   playersInvolved: [{
     playerId: {
       type: mongoose.Schema.Types.ObjectId,
@@ -47,6 +79,10 @@ const matchSchema = new mongoose.Schema({
     enum: ['upcoming', 'live', 'completed', 'cancelled', 'postponed'],
     default: 'upcoming'
   },
+  // Real-time scoring feed (embedded for fast retrieval during live matches).
+// Each entry represents an atomic scoring event.
+// Using Mixed type in `data` allows sport-specific flexibility.
+
   scoringFeed: [{
     // Real-time scoring events
     timestamp: { type: Date, default: Date.now },
@@ -61,6 +97,10 @@ const matchSchema = new mongoose.Schema({
       ref: 'User'
     }
   }],
+  // Precomputed match statistics.
+// Stored to avoid recalculating aggregates on every read.
+// Updated via middleware when scoringFeed changes.
+
   statsAggregate: {
     // Aggregated statistics for the match
     homeTeam: mongoose.Schema.Types.Mixed,
@@ -108,7 +148,13 @@ const matchSchema = new mongoose.Schema({
   toObject: { virtuals: true }
 });
 
-// Indexes
+// Indexes improve performance for live match filtering
+// Indexing Strategy:
+// - sportKey + status → used for filtering live matches by sport
+// - tournamentId → used when displaying tournament fixtures
+// - scheduledAt → used for upcoming match sorting
+// - playersInvolved.playerId → enables quick player-match lookup
+
 matchSchema.index({ sportKey: 1, status: 1 });
 matchSchema.index({ tournamentId: 1 });
 matchSchema.index({ homeTeamId: 1 });
@@ -118,7 +164,13 @@ matchSchema.index({ status: 1, scheduledAt: 1 });
 matchSchema.index({ 'playersInvolved.playerId': 1 });
 
 // Virtual for match title
-matchSchema.virtual('matchTitle').get(function() {
+// Virtual properties (computed fields, not stored in DB)
+
+
+matchSchema.virtual('matchTitle').get(function(){
+// Generates readable match title dynamically.
+// Requires populated team references for full name display.
+                                    
   if (this.homeTeamId && this.awayTeamId) {
     return `${this.homeTeamId.name || 'TBD'} vs ${this.awayTeamId.name || 'TBD'}`;
   }
@@ -126,6 +178,8 @@ matchSchema.virtual('matchTitle').get(function() {
 });
 
 // Virtual for isLive
+// Convenience flag used by frontend to check live state.
+
 matchSchema.virtual('isLive').get(function() {
   return this.status === 'live';
 });
@@ -136,6 +190,9 @@ matchSchema.virtual('isCompleted').get(function() {
 });
 
 // Method to add scoring event
+// Adds a new scoring event to the match.
+// Designed to be atomic to maintain event ordering.
+
 matchSchema.methods.addScoringEvent = function(eventData) {
   this.scoringFeed.push({
     ...eventData,
