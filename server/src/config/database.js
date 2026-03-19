@@ -1,3 +1,6 @@
+// Establishes connection to MongoDB database using Mongoose
+// This is the central database connection for Arena X
+// Ensures all models interact with the same database instance
 const mongoose = require('mongoose');
 const logger = require('../utils/logger');
 
