@@ -1,3 +1,6 @@
+// Handles real-time communication using Socket.io
+// Used for broadcasting live match updates to clients
+// Ensures real-time sync across users
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Match = require('../models/Match');
