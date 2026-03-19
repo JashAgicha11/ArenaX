@@ -1,3 +1,5 @@
+// Logger utility for tracking system events and debugging
+// Helps monitor database operations and server activity
 const winston = require('winston');
 const path = require('path');
 
