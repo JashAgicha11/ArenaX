@@ -30,6 +30,8 @@ const matchSchema = new mongoose.Schema({
     required: true,
     enum: ['cricket', 'football', 'basketball', 'badminton', 'tennis', 'volleyball']
   },
+  // Reference to tournament (normalization)
+// Avoids duplication and ensures consistency
   tournamentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Tournament'
