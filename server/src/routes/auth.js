@@ -1,3 +1,7 @@
+// Authentication Routes
+// Handles user login, registration, and token generation
+// Public endpoints with controlled access
+
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
