@@ -77,18 +77,6 @@ npm run dev:server  # Backend on port 5000
 npm run dev:client  # Frontend on port 3000
 ```
 
-## 🔐 Default Users
-
-After seeding, you can login with:
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@multisport.com | admin123 |
-| Organizer | organizer@multisport.com | organizer123 |
-| Scorer | scorer@multisport.com | scorer123 |
-| Player | cricket@multisport.com | player123 |
-| Player | football@multisport.com | player123 |
-
 ## 🏗️ Project Structure
 
 ```
