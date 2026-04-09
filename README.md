@@ -174,7 +174,7 @@ npm run build
 ---
 ## Group Members
 - Jash Agicha - AU2320253
-- Aryan Tarachandani - AU240177
+- Aryan Tarachandani - AU2420177
 - Dev Shah - AU2420165
 - Aditya Bhatt - AU2240109
 
