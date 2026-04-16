@@ -50,8 +50,14 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// API Routes (mount only existing routes)
+// API Routes
 app.use('/api/v1/auth', require('./routes/auth'));
+app.use('/api/v1/matches', require('./routes/matches'));
+
+// TODO: Add missing routes for teams, tournaments, players
+// app.use('/api/v1/teams', require('./routes/teams'));
+// app.use('/api/v1/tournaments', require('./routes/tournaments'));
+// app.use('/api/v1/players', require('./routes/players'));
 
 // Socket.io handler
 socketHandler(io);
@@ -59,7 +65,7 @@ socketHandler(io);
 // Error handling middleware
 app.use((err, req, res, next) => {
   logger.error(err.stack);
-  res.status(500).json({ 
+  res.status(500).json({
     error: 'Something went wrong!',
     message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
   });

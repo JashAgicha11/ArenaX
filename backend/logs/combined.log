@@ -84,3 +84,29 @@
 {"level":"info","message":"Server running on port 5000","timestamp":"2026-02-04 11:07:28"}
 {"level":"info","message":"Environment: development","timestamp":"2026-02-04 11:07:28"}
 {"level":"info","message":"MongoDB Connected: ac-qamlpvd-shard-00-02.lrwk0mz.mongodb.net","timestamp":"2026-02-04 11:07:33"}
+{"level":"info","message":"Socket.io handler initialized","timestamp":"2026-04-17 00:56:29"}
+{"level":"info","message":"Server running on port 5000","timestamp":"2026-04-17 00:56:29"}
+{"level":"info","message":"Environment: development","timestamp":"2026-04-17 00:56:29"}
+{"level":"error","message":"Error connecting to MongoDB: connect ECONNREFUSED 127.0.0.1:27017, connect ECONNREFUSED ::1:27017","reason":{"commonWireVersion":0,"compatible":true,"heartbeatFrequencyMS":10000,"localThresholdMS":15,"logicalSessionTimeoutMinutes":null,"maxElectionId":null,"maxSetVersion":null,"servers":{},"setName":null,"stale":false,"type":"Unknown"},"stack":"MongooseServerSelectionError: connect ECONNREFUSED 127.0.0.1:27017, connect ECONNREFUSED ::1:27017\n    at _handleConnectionErrors (E:\\Web Development\\React Websites\\Multisport\\backend\\node_modules\\mongoose\\lib\\connection.js:816:11)\n    at NativeConnection.openUri (E:\\Web Development\\React Websites\\Multisport\\backend\\node_modules\\mongoose\\lib\\connection.js:791:11)\n    at async connectDB (E:\\Web Development\\React Websites\\Multisport\\backend\\src\\config\\database.js:9:18)","timestamp":"2026-04-17 00:56:59"}
+{"level":"info","message":"Socket.io handler initialized","timestamp":"2026-04-17 00:57:37"}
+{"level":"info","message":"Server running on port 5000","timestamp":"2026-04-17 00:57:37"}
+{"level":"info","message":"Environment: development","timestamp":"2026-04-17 00:57:37"}
+{"level":"info","message":"MongoDB Connected: ac-qamlpvd-shard-00-00.lrwk0mz.mongodb.net","timestamp":"2026-04-17 00:57:38"}
+{"level":"info","message":"User logged in: aryan.t1@ahduni.edu.in","timestamp":"2026-04-17 00:57:44"}
+{"level":"info","message":"User connected: aryan.t1@ahduni.edu.in (fan)","timestamp":"2026-04-17 00:57:44"}
+{"level":"info","message":"User disconnected: aryan.t1@ahduni.edu.in","timestamp":"2026-04-17 00:57:44"}
+{"level":"info","message":"User connected: aryan.t1@ahduni.edu.in (fan)","timestamp":"2026-04-17 00:57:44"}
+{"level":"info","message":"User disconnected: aryan.t1@ahduni.edu.in","timestamp":"2026-04-17 00:57:53"}
+{"level":"info","message":"User connected: aryan.t1@ahduni.edu.in (fan)","timestamp":"2026-04-17 00:57:53"}
+{"level":"info","message":"User disconnected: aryan.t1@ahduni.edu.in","timestamp":"2026-04-17 00:57:57"}
+{"level":"info","message":"User connected: aryan.t1@ahduni.edu.in (fan)","timestamp":"2026-04-17 00:57:57"}
+{"level":"info","message":"User disconnected: aryan.t1@ahduni.edu.in","timestamp":"2026-04-17 00:57:58"}
+{"level":"info","message":"User connected: aryan.t1@ahduni.edu.in (fan)","timestamp":"2026-04-17 00:57:58"}
+{"level":"error","timestamp":"2026-04-17 00:57:59"}
+{"level":"error","timestamp":"2026-04-17 00:57:59"}
+{"level":"info","message":"Socket.io handler initialized","timestamp":"2026-04-17 01:00:17"}
+{"level":"info","message":"Server running on port 5000","timestamp":"2026-04-17 01:00:17"}
+{"level":"info","message":"Environment: development","timestamp":"2026-04-17 01:00:17"}
+{"level":"info","message":"MongoDB Connected: ac-qamlpvd-shard-00-00.lrwk0mz.mongodb.net","timestamp":"2026-04-17 01:00:19"}
+{"level":"info","message":"User connected: aryan.t1@ahduni.edu.in (fan)","timestamp":"2026-04-17 01:00:19"}
+{"level":"info","message":"SIGINT received, shutting down gracefully","timestamp":"2026-04-17 01:02:35"}
