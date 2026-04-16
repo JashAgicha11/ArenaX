@@ -7,6 +7,14 @@
 
 /* Custom CSS Variables */
 :root {
+  --bg-base: #f8fafc;
+  --bg-surface: #ffffff;
+  --bg-surface-elevated: #f1f5f9;
+  --text-primary: #0f172a;
+  --text-muted: #475569;
+  --border-soft: #dbe2ea;
+  --accent-neon: #3b82f6;
+  --accent-neon-2: #8b5cf6;
   --color-cricket-50: #fef7ee;
   --color-cricket-100: #fdedd6;
   --color-cricket-200: #fad7ac;
@@ -86,8 +94,49 @@ html {
 body {
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   line-height: 1.6;
-  color: #171717;
-  background-color: #fafafa;
+  color: var(--text-primary);
+  background-color: var(--bg-base);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg-base: #020617;
+    --bg-surface: #0f172a;
+    --bg-surface-elevated: #111827;
+    --text-primary: #e2e8f0;
+    --text-muted: #94a3b8;
+    --border-soft: #334155;
+    --accent-neon: #60a5fa;
+    --accent-neon-2: #a78bfa;
+  }
+
+  body {
+    color: var(--text-primary);
+    background-color: var(--bg-base);
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #0f172a;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #334155;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #475569;
+  }
+}
+
+.dark {
+  --bg-base: #020617;
+  --bg-surface: #0f172a;
+  --bg-surface-elevated: #111827;
+  --text-primary: #e2e8f0;
+  --text-muted: #94a3b8;
+  --border-soft: #334155;
+  --accent-neon: #60a5fa;
+  --accent-neon-2: #a78bfa;
 }
 
 /* Custom scrollbar */
@@ -242,6 +291,17 @@ body {
 
 .card {
   @apply bg-white rounded-2xl shadow-soft border border-neutral-200 p-6;
+}
+
+.neo-surface {
+  background: linear-gradient(140deg, color-mix(in srgb, var(--bg-surface) 88%, transparent), color-mix(in srgb, var(--bg-surface-elevated) 70%, transparent));
+  border: 1px solid color-mix(in srgb, var(--border-soft) 80%, transparent);
+}
+
+.neo-glow {
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, var(--accent-neon) 20%, transparent),
+    0 12px 40px -20px color-mix(in srgb, var(--accent-neon-2) 65%, transparent);
 }
 
 .card-hover {

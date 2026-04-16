@@ -38,15 +38,15 @@ const LatestNews = () => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-2xl font-bold mb-6 text-gray-800">Latest News</h2>
+      <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">Latest News</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {[...Array(3)].map((_, i) => (
             <div key={i} className="animate-pulse">
-              <div className="h-32 bg-gray-200 rounded mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/2 mb-2"></div>
-              <div className="h-3 bg-gray-200 rounded w-1/4"></div>
+              <div className="h-32 bg-slate-200 dark:bg-slate-700 rounded mb-4"></div>
+              <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2"></div>
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/2 mb-2"></div>
+              <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded w-1/4"></div>
             </div>
           ))}
         </div>
@@ -55,20 +55,20 @@ const LatestNews = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Latest News</h2>
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <h2 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">Latest News</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {news.map((item) => (
-          <div key={item.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-lg transition-shadow">
+          <div key={item.id} className="overflow-hidden rounded-lg border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-shadow bg-slate-50 dark:bg-slate-800">
             <img
               src={item.image}
               alt={item.title}
               className="w-full h-32 object-cover"
             />
             <div className="p-4">
-              <h3 className="font-semibold text-lg mb-2 line-clamp-2">{item.title}</h3>
-              <p className="text-gray-600 text-sm mb-2 line-clamp-3">{item.summary}</p>
-              <span className="text-xs text-gray-500">{item.publishedAt}</span>
+              <h3 className="mb-2 line-clamp-2 text-lg font-semibold text-slate-900 dark:text-white">{item.title}</h3>
+              <p className="mb-2 line-clamp-3 text-sm text-slate-600 dark:text-slate-300">{item.summary}</p>
+              <span className="text-xs text-slate-500 dark:text-slate-400">{item.publishedAt}</span>
             </div>
           </div>
         ))}

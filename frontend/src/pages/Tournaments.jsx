@@ -1,20 +1,28 @@
+import { Link } from 'react-router-dom'
+import { PublicCard, PublicPageShell } from '@components/ui/PublicPageShell'
+
+const tournaments = [
+  { id: 1, name: 'Premier League', sport: 'Football', teams: 20, status: 'Ongoing' },
+  { id: 2, name: 'Wimbledon Open', sport: 'Tennis', teams: 128, status: 'Upcoming' },
+  { id: 3, name: 'Champions Trophy', sport: 'Cricket', teams: 8, status: 'Registrations Open' },
+]
+
 const Tournaments = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Tournaments</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Premier League</h2>
-          <p className="text-gray-600 mb-4">Football tournament with 20 teams</p>
-          <div className="flex justify-between items-center">
-            <span className="text-sm text-gray-500">Status: Ongoing</span>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+    <PublicPageShell title="Tournaments" subtitle="Compete in pro-grade events with bracket intelligence and live progression insights.">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {tournaments.map((tournament) => (
+          <PublicCard key={tournament.id}>
+            <h2 className="text-xl font-semibold text-slate-900 dark:text-white">{tournament.name}</h2>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{tournament.sport} - {tournament.teams} teams</p>
+            <p className="mt-3 text-sm text-primary-600 dark:text-primary-300">Status: {tournament.status}</p>
+            <Link to={`/tournaments/${tournament.id}`} className="mt-4 inline-flex rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400">
               View Details
-            </button>
-          </div>
-        </div>
+            </Link>
+          </PublicCard>
+        ))}
       </div>
-    </div>
+    </PublicPageShell>
   )
 }
 

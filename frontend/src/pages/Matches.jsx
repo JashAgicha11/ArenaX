@@ -1,30 +1,34 @@
+import { Link } from 'react-router-dom'
+import { PublicCard, PublicPageShell } from '@components/ui/PublicPageShell'
+
+const matches = [
+  { id: '1', sport: 'Football', status: 'Live', time: "67'", teams: ['Manchester United', 'Liverpool'], score: '2 - 1' },
+  { id: '2', sport: 'Cricket', status: 'Live', time: '18.2 overs', teams: ['Mumbai Indians', 'CSK'], score: '156/4 - 142/6' },
+  { id: '3', sport: 'Basketball', status: 'Upcoming', time: 'Today 20:00', teams: ['Lakers', 'Warriors'], score: 'Preview' },
+]
+
 const Matches = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Live Matches</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex justify-between items-center mb-4">
-            <span className="text-sm text-gray-500">Football</span>
-            <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs">LIVE</span>
-          </div>
-          <div className="text-center">
-            <div className="flex justify-between items-center mb-4">
-              <div className="text-center">
-                <img src="/api/placeholder/50/50" alt="Team A" className="w-12 h-12 mx-auto mb-2" />
-                <p className="font-semibold">Team A</p>
-              </div>
-              <div className="text-2xl font-bold">2 - 1</div>
-              <div className="text-center">
-                <img src="/api/placeholder/50/50" alt="Team B" className="w-12 h-12 mx-auto mb-2" />
-                <p className="font-semibold">Team B</p>
-              </div>
+    <PublicPageShell title="Live Matches" subtitle="Follow high-intensity fixtures with real-time match states and event feeds.">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {matches.map((match) => (
+          <PublicCard key={match.id}>
+            <div className="mb-4 flex items-center justify-between">
+              <span className="text-sm text-slate-500 dark:text-slate-400">{match.sport}</span>
+              <span className={`rounded-full px-3 py-1 text-xs font-semibold ${match.status === 'Live' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300'}`}>
+                {match.status}
+              </span>
             </div>
-            <p className="text-sm text-gray-600">45' - Second Half</p>
-          </div>
-        </div>
+            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{match.teams[0]} vs {match.teams[1]}</h2>
+            <p className="mt-2 text-2xl font-bold text-slate-900 dark:text-white">{match.score}</p>
+            <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">{match.time}</p>
+            <Link to={`/matches/${match.id}`} className="mt-4 inline-flex rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400">
+              Open Match
+            </Link>
+          </PublicCard>
+        ))}
       </div>
-    </div>
+    </PublicPageShell>
   )
 }
 

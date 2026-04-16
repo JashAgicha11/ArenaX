@@ -27,7 +27,7 @@ const Layout = ({ children }) => {
   }, [])
 
   return (
-    <div ref={layoutRef} className="min-h-screen bg-neutral-50 flex flex-col">
+    <div ref={layoutRef} className="min-h-screen bg-slate-100 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 flex flex-col">
       <Header />
       <Navigation />
       

@@ -43,10 +43,10 @@ const TrendingTournaments = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="bg-white rounded-lg shadow-md p-6 animate-pulse">
-            <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div className="h-3 bg-gray-200 rounded w-1/2 mb-4"></div>
-            <div className="h-8 bg-gray-200 rounded w-full"></div>
+          <div key={i} className="animate-pulse rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+            <div className="mb-2 h-4 w-3/4 rounded bg-slate-200 dark:bg-slate-700" />
+            <div className="mb-4 h-3 w-1/2 rounded bg-slate-200 dark:bg-slate-700" />
+            <div className="h-8 w-full rounded bg-slate-200 dark:bg-slate-700" />
           </div>
         ))}
       </div>
@@ -54,19 +54,19 @@ const TrendingTournaments = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
-      <h2 className="text-2xl font-bold mb-6 text-gray-800">Trending Tournaments</h2>
+    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+      <h2 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">Trending Tournaments</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {tournaments.map((tournament) => (
-          <div key={tournament.id} className="bg-gray-50 rounded-lg p-4 hover:shadow-lg transition-shadow">
-            <h3 className="font-semibold text-lg mb-2">{tournament.name}</h3>
-            <p className="text-gray-600 mb-1">Sport: {tournament.sport}</p>
-            <p className="text-gray-600 mb-1">Participants: {tournament.participants}</p>
-            <p className="text-gray-600 mb-3">Prize: {tournament.prize}</p>
+          <div key={tournament.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition-shadow hover:shadow-lg dark:border-slate-800 dark:bg-slate-800">
+            <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">{tournament.name}</h3>
+            <p className="mb-1 text-slate-600 dark:text-slate-300">Sport: {tournament.sport}</p>
+            <p className="mb-1 text-slate-600 dark:text-slate-300">Participants: {tournament.participants}</p>
+            <p className="mb-3 text-slate-600 dark:text-slate-300">Prize: {tournament.prize}</p>
             <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
               tournament.status === 'ongoing' 
-                ? 'bg-green-100 text-green-800' 
-                : 'bg-blue-100 text-blue-800'
+                ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' 
+                : 'bg-sky-100 text-sky-800 dark:bg-sky-900/30 dark:text-sky-300'
             }`}>
               {tournament.status}
             </span>

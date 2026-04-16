@@ -1,25 +1,27 @@
+import { PublicCard, PublicPageShell } from '@components/ui/PublicPageShell'
+
+const leaders = [
+  { rank: 1, name: 'Lionel Messi', points: 95 },
+  { rank: 2, name: 'Cristiano Ronaldo', points: 92 },
+  { rank: 3, name: 'Neymar', points: 89 },
+  { rank: 4, name: 'Virat Kohli', points: 88 },
+]
+
 const Leaderboards = () => {
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Leaderboards</h1>
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h2 className="text-xl font-semibold mb-4">Top Players</h2>
-        <div className="space-y-2">
-          <div className="flex justify-between items-center p-2 border-b">
-            <span>1. Lionel Messi</span>
-            <span>95 pts</span>
-          </div>
-          <div className="flex justify-between items-center p-2 border-b">
-            <span>2. Cristiano Ronaldo</span>
-            <span>92 pts</span>
-          </div>
-          <div className="flex justify-between items-center p-2 border-b">
-            <span>3. Neymar</span>
-            <span>89 pts</span>
-          </div>
+    <PublicPageShell title="Leaderboards" subtitle="Transparent rankings by form, contribution, and clutch-impact score.">
+      <PublicCard>
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Top Players</h2>
+        <div className="mt-4 space-y-2">
+          {leaders.map((player) => (
+            <div key={player.rank} className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-800 dark:bg-slate-800">
+              <span className="font-medium text-slate-800 dark:text-slate-100">{player.rank}. {player.name}</span>
+              <span className="text-sm font-semibold text-primary-600 dark:text-primary-300">{player.points} pts</span>
+            </div>
+          ))}
         </div>
-      </div>
-    </div>
+      </PublicCard>
+    </PublicPageShell>
   )
 }
 

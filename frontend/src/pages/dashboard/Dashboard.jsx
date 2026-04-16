@@ -1,39 +1,68 @@
+import { Link } from 'react-router-dom'
+import { useAuth } from '@contexts/AuthContext'
+import { ActionPanel, DataList, StatCard, WorkspacePageShell } from '@components/workspace/WorkspacePrimitives'
+
 const Dashboard = () => {
+  const { user } = useAuth()
+
+  const quickActions = [
+    { title: 'Explore live matches', description: 'Follow ongoing games with minute-level updates.', actionLabel: 'Open Matches', to: '/matches' },
+    { title: 'Track tournaments', description: 'View active brackets, schedules, and standings.', actionLabel: 'View Tournaments', to: '/tournaments' },
+    { title: 'Read updates', description: 'Stay current with the latest ArenaX sports coverage.', actionLabel: 'Open News', to: '/news' },
+  ]
+
+  if (user?.role === 'scorer' || user?.role === 'organizer' || user?.role === 'admin') {
+    quickActions.unshift({
+      title: 'Go to scorer console',
+      description: 'Capture events, scores, and momentum changes in real time.',
+      actionLabel: 'Open Console',
+      to: '/scorer',
+    })
+  }
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">My Stats</h2>
-          <div className="space-y-2">
-            <div className="flex justify-between">
-              <span>Matches Watched:</span>
-              <span className="font-bold">42</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Favorite Sport:</span>
-              <span className="font-bold">Football</span>
-            </div>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Recent Activity</h2>
-          <div className="space-y-2 text-sm">
-            <p>Watched Manchester United vs Liverpool</p>
-            <p>Followed Barcelona FC</p>
-            <p>Joined Premier League predictions</p>
-          </div>
-        </div>
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h2 className="text-xl font-semibold mb-4">Notifications</h2>
-          <div className="space-y-2 text-sm">
-            <p>New match starting in 30 minutes</p>
-            <p>Tournament bracket updated</p>
-            <p>Player transfer news</p>
-          </div>
-        </div>
+    <WorkspacePageShell
+      eyebrow="Personal Workspace"
+      title={`Welcome back, ${user?.name || 'Player'}`}
+      description="Your ArenaX control center for matches, updates, and role-based tools."
+      actions={
+        <>
+          <Link to="/leaderboards" className="rounded-xl border border-slate-300 px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:text-slate-200 dark:hover:bg-slate-800">Leaderboards</Link>
+          <Link to="/matches" className="rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400">Live Matches</Link>
+        </>
+      }
+    >
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <StatCard label="Matches Followed" value="42" helper="Last 30 days" />
+        <StatCard label="Favorite Sport" value="Football" helper="Auto-personalized feed" />
+        <StatCard label="Prediction Accuracy" value="78%" helper="Across 115 picks" />
       </div>
-    </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
+        {quickActions.map((action) => (
+          <ActionPanel key={action.title} {...action} />
+        ))}
+      </div>
+
+      <div className="mt-6 grid grid-cols-1 gap-4 md:grid-cols-2">
+        <DataList
+          title="Recent Activity"
+          items={[
+            'Watched Manchester United vs Liverpool',
+            'Followed Barcelona FC',
+            'Joined Premier League predictions',
+          ]}
+        />
+        <DataList
+          title="Notifications"
+          items={[
+            'New match starts in 30 minutes',
+            'Tournament bracket updated',
+            'Player transfer news alert',
+          ]}
+        />
+      </div>
+    </WorkspacePageShell>
   )
 }
 

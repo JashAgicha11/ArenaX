@@ -1,46 +1,54 @@
+import { useMemo, useState } from 'react'
+import { DataList, WorkspacePageShell } from '@components/workspace/WorkspacePrimitives'
+
 const ScorerConsole = () => {
+  const [scoreA, setScoreA] = useState(2)
+  const [scoreB, setScoreB] = useState(1)
+
+  const events = useMemo(
+    () => [
+      `23' Goal for Team A`,
+      `45' Yellow card - Team B`,
+      `58' Substitution - Team A`,
+      `67' Goal for Team B`,
+    ],
+    [],
+  )
+
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-8">Scorer Console</h1>
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Live Match</h2>
-            <div className="text-center">
-              <div className="flex justify-between items-center mb-4">
-                <div>
-                  <p className="font-semibold">Team A</p>
-                  <p className="text-2xl font-bold">2</p>
-                </div>
-                <div className="text-sm text-gray-500">vs</div>
-                <div>
-                  <p className="font-semibold">Team B</p>
-                  <p className="text-2xl font-bold">1</p>
-                </div>
+    <WorkspacePageShell
+      eyebrow="Live Operations"
+      title="Scorer Console"
+      description="Capture live match events with accurate timelines and scoreboard updates."
+    >
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <article className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Live Match</h2>
+          <div className="mt-5 text-center">
+            <div className="mb-6 grid grid-cols-3 items-center">
+              <div>
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Team A</p>
+                <p className="text-4xl font-bold text-slate-900 dark:text-white">{scoreA}</p>
               </div>
-              <div className="space-x-2">
-                <button className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                  Goal Team A
-                </button>
-                <button className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">
-                  Goal Team B
-                </button>
+              <span className="text-sm font-semibold uppercase tracking-wide text-primary-600 dark:text-primary-300">Live</span>
+              <div>
+                <p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Team B</p>
+                <p className="text-4xl font-bold text-slate-900 dark:text-white">{scoreB}</p>
               </div>
             </div>
-          </div>
-          <div>
-            <h2 className="text-xl font-semibold mb-4">Match Events</h2>
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <span className="text-sm text-gray-500">23'</span>
-                <span className="bg-green-100 text-green-800 px-2 py-1 rounded text-xs">GOAL</span>
-                <span>Player scored for Team A</span>
-              </div>
+            <div className="flex flex-wrap justify-center gap-2">
+              <button onClick={() => setScoreA((prev) => prev + 1)} className="rounded-xl bg-emerald-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-emerald-700">
+                Goal Team A
+              </button>
+              <button onClick={() => setScoreB((prev) => prev + 1)} className="rounded-xl bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700">
+                Goal Team B
+              </button>
             </div>
           </div>
-        </div>
+        </article>
+        <DataList title="Match Event Stream" items={events} />
       </div>
-    </div>
+    </WorkspacePageShell>
   )
 }
 
