@@ -595,3 +595,7 @@
 {"level":"info","message":"Server running on port 5000","timestamp":"2026-04-17 14:51:27"}
 {"level":"info","message":"Environment: development","timestamp":"2026-04-17 14:51:27"}
 {"level":"info","message":"MongoDB Connected: ac-qamlpvd-shard-00-01.lrwk0mz.mongodb.net","timestamp":"2026-04-17 14:51:28"}
+{"level":"info","message":"Socket.io handler initialized","timestamp":"2026-04-17 14:53:30"}
+{"level":"info","message":"Server running on port 5000","timestamp":"2026-04-17 14:53:30"}
+{"level":"info","message":"Environment: development","timestamp":"2026-04-17 14:53:30"}
+{"level":"info","message":"MongoDB Connected: ac-qamlpvd-shard-00-02.lrwk0mz.mongodb.net","timestamp":"2026-04-17 14:53:31"}
