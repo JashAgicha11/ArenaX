@@ -12,21 +12,21 @@ const LatestNews = () => {
         title: 'Messi Leads Inter Miami to Victory',
         summary: 'Lionel Messi scored a hat-trick as Inter Miami defeated their rivals 3-1.',
         publishedAt: '2 hours ago',
-        image: '/api/placeholder/200/150'
+        image: 'https://via.placeholder.com/200x150'
       },
       {
         id: 2,
         title: 'NBA Finals Date Announced',
         summary: 'The NBA Finals will begin on June 1st with a blockbuster matchup.',
         publishedAt: '4 hours ago',
-        image: '/api/placeholder/200/150'
+        image: 'https://via.placeholder.com/200x150'
       },
       {
         id: 3,
         title: 'Tennis Grand Slam Update',
         summary: 'Wimbledon organizers announce new safety measures for this year\'s tournament.',
         publishedAt: '6 hours ago',
-        image: '/api/placeholder/200/150'
+        image: 'https://via.placeholder.com/200x150'
       }
     ]
 
