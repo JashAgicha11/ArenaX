@@ -109,7 +109,8 @@ const verifyRole = (allowedRoles) => {
       });
     }
 
-    if (!req.user.hasAnyRole(allowedRoles)) {
+    // RBAC gate: only allow requests from explicitly permitted roles.
+    if (!allowedRoles.includes(req.user.role)) {
       return res.status(403).json({ 
         error: 'Access denied. Insufficient permissions.' 
       });

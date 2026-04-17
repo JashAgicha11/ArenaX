@@ -53,11 +53,11 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/matches', require('./routes/matches'));
-
-// TODO: Add missing routes for teams, tournaments, players
-// app.use('/api/v1/teams', require('./routes/teams'));
-// app.use('/api/v1/tournaments', require('./routes/tournaments'));
-// app.use('/api/v1/players', require('./routes/players'));
+app.use('/api/v1/users', require('./routes/users'));
+app.use('/api/v1/tournaments', require('./routes/tournaments'));
+// Backward-compatible aliases without version segment.
+app.use('/api/matches', require('./routes/matches'));
+app.use('/api/tournaments', require('./routes/tournaments'));
 
 // Socket.io handler
 socketHandler(io);

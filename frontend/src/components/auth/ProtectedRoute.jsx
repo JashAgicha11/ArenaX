@@ -19,6 +19,7 @@ const ProtectedRoute = ({ children, allowedRoles = [] }) => {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
+  // Frontend RBAC guard: block route if user's role is not allowed.
   if (allowedRoles.length > 0 && !allowedRoles.includes(user.role) && user.role !== 'admin') {
     return <Unauthorized />
   }

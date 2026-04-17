@@ -32,7 +32,7 @@ const generateTokens = (userId) => {
 // @access  Public
 router.post('/register', async (req, res) => {
   try {
-    const { name, email, password, role = 'fan', sports = [] } = req.body;
+    const { name, email, password, role = 'player', sports = [] } = req.body;
 
     // Check if user already exists
     const existingUser = await User.findByEmail(email);
@@ -43,9 +43,15 @@ router.post('/register', async (req, res) => {
     }
 
     // Validate role
+    const allowedRoles = ['organizer', 'player'];
     if (role === 'admin') {
       return res.status(400).json({ 
         error: 'Admin role cannot be assigned during registration.' 
+      });
+    }
+    if (!allowedRoles.includes(role)) {
+      return res.status(400).json({
+        error: 'Invalid role. Allowed roles are organizer and player.'
       });
     }
 

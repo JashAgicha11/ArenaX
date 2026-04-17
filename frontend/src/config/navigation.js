@@ -9,7 +9,8 @@ export const publicNavItems = [
 ]
 
 export const userMenuItems = [
-  { path: '/dashboard', label: 'Dashboard', roles: ['player', 'fan', 'organizer', 'scorer', 'admin'] },
-  { path: '/scorer', label: 'Scorer Console', roles: ['scorer', 'organizer', 'admin'] },
-  { path: '/admin', label: 'Admin Panel', roles: ['admin'] },
+  { path: '/dashboard', label: 'Dashboard', roles: ['player', 'organizer', 'admin'] },
+  { path: '/dashboard/player', label: 'Player Dashboard', roles: ['player', 'admin'] },
+  { path: '/dashboard/organizer', label: 'Organizer Dashboard', roles: ['organizer', 'admin'] },
+  { path: '/dashboard/admin', label: 'Admin Dashboard', roles: ['admin'] },
 ]

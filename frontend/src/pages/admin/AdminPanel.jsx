@@ -13,9 +13,9 @@ const AdminPanel = () => {
         <StatCard label="System Health" value="99.97%" helper="Last 30 days uptime" />
       </div>
       <div className="mt-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <ActionPanel title="User Management" description="Review accounts, role requests, and moderation flags." actionLabel="Manage Users" />
-        <ActionPanel title="Tournament Governance" description="Audit brackets, score disputes, and compliance rules." actionLabel="Manage Tournaments" />
-        <ActionPanel title="Platform Settings" description="Configure feature flags, integrations, and environment controls." actionLabel="Open Settings" />
+        <ActionPanel title="User Management" description="Review accounts, role requests, and moderation flags." actionLabel="Manage Users" to="/dashboard/admin" />
+        <ActionPanel title="Tournament Governance" description="Audit brackets, score disputes, and compliance rules." actionLabel="Manage Tournaments" to="/tournaments" />
+        <ActionPanel title="Platform Settings" description="Configure feature flags, integrations, and environment controls." actionLabel="Open Settings" to="/dashboard/admin" />
       </div>
       <div className="mt-6">
         <DataList

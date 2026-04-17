@@ -2,7 +2,6 @@ import { useEffect, useRef } from 'react'
 import { gsap } from 'gsap'
 import Header from './Header'
 import Footer from './Footer'
-import Navigation from './Navigation'
 
 const Layout = ({ children }) => {
   const layoutRef = useRef(null)
@@ -29,7 +28,6 @@ const Layout = ({ children }) => {
   return (
     <div ref={layoutRef} className="min-h-screen bg-slate-100 text-slate-900 transition-colors duration-300 dark:bg-slate-950 dark:text-slate-100 flex flex-col">
       <Header />
-      <Navigation />
       
       <main className="flex-1">
         {children}

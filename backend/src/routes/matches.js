@@ -4,7 +4,7 @@
 
 const express = require('express');
 const Match = require('../models/Match');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, verifyRole } = require('../middleware/auth');
 const logger = require('../utils/logger');
 
 const router = express.Router();
@@ -106,13 +106,9 @@ router.get('/:id', async (req, res) => {
 
 // @route   POST /api/v1/matches
 // @desc    Create a new match
-// @access  Private (Admin/Organizer)
-router.post('/', verifyToken, async (req, res) => {
+// @access  Private (Organizer)
+router.post('/', verifyToken, verifyRole(['organizer']), async (req, res) => {
   try {
-    if (!req.user.hasAnyRole(['admin', 'organizer'])) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
-    }
-
     const matchData = { ...req.body };
     const match = new Match(matchData);
     await match.save();
@@ -136,13 +132,9 @@ router.post('/', verifyToken, async (req, res) => {
 
 // @route   PUT /api/v1/matches/:id
 // @desc    Update match
-// @access  Private (Admin/Organizer)
-router.put('/:id', verifyToken, async (req, res) => {
+// @access  Private (Organizer)
+router.put('/:id', verifyToken, verifyRole(['organizer']), async (req, res) => {
   try {
-    if (!req.user.hasAnyRole(['admin', 'organizer'])) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
-    }
-
     const match = await Match.findByIdAndUpdate(
       req.params.id,
       req.body,
@@ -172,12 +164,8 @@ router.put('/:id', verifyToken, async (req, res) => {
 // @route   DELETE /api/v1/matches/:id
 // @desc    Delete match
 // @access  Private (Admin only)
-router.delete('/:id', verifyToken, async (req, res) => {
+router.delete('/:id', verifyToken, verifyRole(['admin']), async (req, res) => {
   try {
-    if (!req.user.hasRole('admin')) {
-      return res.status(403).json({ error: 'Insufficient permissions' });
-    }
-
     const match = await Match.findByIdAndDelete(req.params.id);
 
     if (!match) {

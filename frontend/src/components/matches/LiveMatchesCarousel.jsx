@@ -2,64 +2,32 @@ import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { gsap } from 'gsap'
 import { Play, Users, MapPin, ArrowRight, ArrowLeft } from 'lucide-react'
+import { matchService } from '@services/matchService'
 
 const LiveMatchesCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isPaused, setIsPaused] = useState(false)
+  const [liveMatches, setLiveMatches] = useState([])
+  const [loading, setLoading] = useState(true)
   const carouselRef = useRef(null)
   const intervalRef = useRef(null)
 
-  // Mock live matches data - in real app this would come from API
-  const liveMatches = [
-    {
-      id: 1,
-      sport: 'cricket',
-      homeTeam: 'Mumbai Indians',
-      awayTeam: 'Chennai Super Kings',
-      homeScore: '156/4',
-      awayScore: '142/6',
-      overs: '18.2',
-      status: 'Live',
-      venue: 'Wankhede Stadium, Mumbai',
-      viewers: '2.4K'
-    },
-    {
-      id: 2,
-      sport: 'football',
-      homeTeam: 'Manchester United',
-      awayTeam: 'Liverpool',
-      homeScore: '2',
-      awayScore: '1',
-      time: '67\'',
-      status: 'Live',
-      venue: 'Old Trafford, Manchester',
-      viewers: '5.1K'
-    },
-    {
-      id: 3,
-      sport: 'basketball',
-      homeTeam: 'Lakers',
-      awayTeam: 'Warriors',
-      homeScore: '89',
-      awayScore: '82',
-      quarter: 'Q3',
-      status: 'Live',
-      venue: 'Crypto.com Arena, LA',
-      viewers: '3.2K'
-    },
-    {
-      id: 4,
-      sport: 'tennis',
-      homeTeam: 'Djokovic',
-      awayTeam: 'Nadal',
-      homeScore: '6-4, 3-2',
-      awayScore: '4-6, 2-3',
-      set: 'Set 2',
-      status: 'Live',
-      venue: 'Wimbledon, London',
-      viewers: '1.8K'
+  useEffect(() => {
+    const loadLiveMatches = async () => {
+      try {
+        setLoading(true)
+        const data = await matchService.getMatches()
+        const matches = (data.matches || []).filter((match) => match.status === 'live')
+        setLiveMatches(matches)
+      } catch (error) {
+        setLiveMatches([])
+      } finally {
+        setLoading(false)
+      }
     }
-  ]
+
+    loadLiveMatches()
+  }, [])
 
   useEffect(() => {
     // GSAP animations for carousel
@@ -85,7 +53,7 @@ const LiveMatchesCarousel = () => {
 
   // Auto-scroll functionality
   useEffect(() => {
-    if (!isPaused) {
+    if (!isPaused && liveMatches.length > 0) {
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prev) => (prev + 1) % liveMatches.length)
       }, 5000)
@@ -99,10 +67,12 @@ const LiveMatchesCarousel = () => {
   }, [isPaused, liveMatches.length])
 
   const nextSlide = () => {
+    if (!liveMatches.length) return
     setCurrentIndex((prev) => (prev + 1) % liveMatches.length)
   }
 
   const prevSlide = () => {
+    if (!liveMatches.length) return
     setCurrentIndex((prev) => (prev - 1 + liveMatches.length) % liveMatches.length)
   }
 
@@ -126,11 +96,13 @@ const LiveMatchesCarousel = () => {
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
+      {loading ? <p className="px-4 py-6 text-slate-600 dark:text-slate-300">Loading live matches...</p> : null}
+      {!loading && liveMatches.length === 0 ? <p className="px-4 py-6 text-slate-600 dark:text-slate-300">No live matches right now.</p> : null}
       {/* Carousel Track */}
       <div className="carousel-track flex transition-transform duration-800 ease-out">
         {liveMatches.map((match, index) => (
           <div
-            key={match.id}
+            key={match._id}
             className="carousel-item w-full flex-shrink-0"
             style={{ minWidth: '100%' }}
           >
@@ -138,18 +110,15 @@ const LiveMatchesCarousel = () => {
               {/* Match Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <div className={`h-3 w-3 rounded-full animate-pulse ${sportDotClasses[match.sport] || 'bg-primary-500'}`} />
+                  <div className={`h-3 w-3 rounded-full animate-pulse ${sportDotClasses[match.sportKey] || 'bg-primary-500'}`} />
                   <span className="text-sm font-medium text-slate-600 uppercase tracking-wide dark:text-slate-300">
-                    {match.sport}
+                    {match.sportKey}
                   </span>
                   <span className="text-sm font-medium text-emerald-600 dark:text-emerald-300">
                     {match.status}
                   </span>
                 </div>
-                <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400">
-                  <Users className="w-4 h-4" />
-                  <span className="text-sm">{match.viewers}</span>
-                </div>
+                <div className="flex items-center space-x-2 text-slate-500 dark:text-slate-400"><Users className="w-4 h-4" /><span className="text-sm">Live</span></div>
               </div>
 
               {/* Teams and Score */}
@@ -158,10 +127,10 @@ const LiveMatchesCarousel = () => {
                   {/* Home Team */}
                   <div className="text-right">
                     <div className="mb-1 text-lg font-bold text-slate-900 dark:text-white">
-                      {match.homeTeam}
+                      {match.homeTeamId?.name || 'TBD'}
                     </div>
                     <div className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                      {match.sport === 'cricket' ? match.homeScore.split('/')[0] : match.homeScore}
+                      {match.result?.homeScore || '-'}
                     </div>
                   </div>
 
@@ -169,20 +138,17 @@ const LiveMatchesCarousel = () => {
                   <div className="text-center">
                     <div className="mb-2 text-3xl font-bold text-slate-400 dark:text-slate-500">VS</div>
                     <div className="text-sm text-slate-500 dark:text-slate-400">
-                      {match.sport === 'cricket' && match.overs}
-                      {match.sport === 'football' && match.time}
-                      {match.sport === 'basketball' && match.quarter}
-                      {match.sport === 'tennis' && match.set}
+                      {match.status}
                     </div>
                   </div>
 
                   {/* Away Team */}
                   <div className="text-left">
                     <div className="mb-1 text-lg font-bold text-slate-900 dark:text-white">
-                      {match.awayTeam}
+                      {match.awayTeamId?.name || 'TBD'}
                     </div>
                     <div className="text-2xl font-bold text-slate-800 dark:text-slate-100">
-                      {match.sport === 'cricket' ? match.awayScore.split('/')[0] : match.awayScore}
+                      {match.result?.awayScore || '-'}
                     </div>
                   </div>
                 </div>
@@ -192,10 +158,10 @@ const LiveMatchesCarousel = () => {
               <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
                 <div className="flex items-center space-x-1">
                   <MapPin className="w-4 h-4" />
-                  <span className="truncate max-w-32">{match.venue}</span>
+                  <span className="truncate max-w-32">{match.venue?.name || 'Venue TBA'}</span>
                 </div>
                 <Link
-                  to={`/matches/${match.id}`}
+                  to={`/matches/${match._id}`}
                   className="flex items-center space-x-2 rounded-xl bg-primary-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400"
                 >
                   <Play className="w-4 h-4" />
@@ -208,19 +174,19 @@ const LiveMatchesCarousel = () => {
       </div>
 
       {/* Navigation Arrows */}
-      <button
+      {liveMatches.length > 1 ? (<button
         onClick={prevSlide}
         className="absolute left-4 top-1/2 transform -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-700 shadow-medium transition-all duration-200 hover:scale-110 hover:bg-white hover:text-primary-600 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-primary-300"
       >
         <ArrowLeft className="w-5 h-5" />
-      </button>
+      </button>) : null}
 
-      <button
+      {liveMatches.length > 1 ? (<button
         onClick={nextSlide}
         className="absolute right-4 top-1/2 transform -translate-y-1/2 rounded-full bg-white/90 p-2 text-slate-700 shadow-medium transition-all duration-200 hover:scale-110 hover:bg-white hover:text-primary-600 dark:bg-slate-900/90 dark:text-slate-200 dark:hover:bg-slate-800 dark:hover:text-primary-300"
       >
         <ArrowRight className="w-5 h-5" />
-      </button>
+      </button>) : null}
 
       {/* Dots Indicator */}
       <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">

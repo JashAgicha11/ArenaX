@@ -1,42 +1,27 @@
 import { useState, useEffect } from 'react'
+import { tournamentService } from '@services/tournamentService'
 
 const TrendingTournaments = () => {
   const [tournaments, setTournaments] = useState([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    // Mock data for now
-    const mockTournaments = [
-      {
-        id: 1,
-        name: 'Premier League Championship',
-        sport: 'Football',
-        participants: 20,
-        status: 'ongoing',
-        prize: '$50,000'
-      },
-      {
-        id: 2,
-        name: 'NBA Finals',
-        sport: 'Basketball',
-        participants: 2,
-        status: 'upcoming',
-        prize: '$100,000'
-      },
-      {
-        id: 3,
-        name: 'Wimbledon Open',
-        sport: 'Tennis',
-        participants: 128,
-        status: 'ongoing',
-        prize: '$200,000'
+    const loadTournaments = async () => {
+      try {
+        setLoading(true)
+        setError('')
+        const data = await tournamentService.getTournaments()
+        setTournaments((data.tournaments || []).slice(0, 3))
+      } catch (err) {
+        setError(err.response?.data?.error || 'Failed to load tournaments.')
+        setTournaments([])
+      } finally {
+        setLoading(false)
       }
-    ]
+    }
 
-    setTimeout(() => {
-      setTournaments(mockTournaments)
-      setLoading(false)
-    }, 1000)
+    loadTournaments()
   }, [])
 
   if (loading) {
@@ -56,13 +41,14 @@ const TrendingTournaments = () => {
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm dark:border-slate-800 dark:bg-slate-900">
       <h2 className="mb-6 text-2xl font-bold text-slate-900 dark:text-white">Trending Tournaments</h2>
+      {error ? <p className="mb-4 text-sm text-rose-600 dark:text-rose-300">{error}</p> : null}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {tournaments.map((tournament) => (
-          <div key={tournament.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition-shadow hover:shadow-lg dark:border-slate-800 dark:bg-slate-800">
+          <div key={tournament._id || tournament.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition-shadow hover:shadow-lg dark:border-slate-800 dark:bg-slate-800">
             <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">{tournament.name}</h3>
-            <p className="mb-1 text-slate-600 dark:text-slate-300">Sport: {tournament.sport}</p>
-            <p className="mb-1 text-slate-600 dark:text-slate-300">Participants: {tournament.participants}</p>
-            <p className="mb-3 text-slate-600 dark:text-slate-300">Prize: {tournament.prize}</p>
+            <p className="mb-1 text-slate-600 dark:text-slate-300">Sport: {tournament.sportKey}</p>
+            <p className="mb-1 text-slate-600 dark:text-slate-300">Participants: {(tournament.teams || []).length + (tournament.players || []).length}</p>
+            <p className="mb-3 text-slate-600 dark:text-slate-300">Prize: {tournament.settings?.prizePool || 'N/A'}</p>
             <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
               tournament.status === 'ongoing' 
                 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' 
@@ -73,6 +59,7 @@ const TrendingTournaments = () => {
           </div>
         ))}
       </div>
+      {!loading && !tournaments.length && !error ? <p className="mt-4 text-slate-600 dark:text-slate-300">No tournaments found.</p> : null}
     </div>
   )
 }

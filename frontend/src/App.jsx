@@ -22,8 +22,10 @@ import NewsDetail from '@pages/NewsDetail'
 import Login from '@pages/auth/Login'
 import Register from '@pages/auth/Register'
 import Dashboard from '@pages/dashboard/Dashboard'
+import PlayerDashboard from '@pages/dashboard/PlayerDashboard'
+import OrganizerDashboard from '@pages/dashboard/OrganizerDashboard'
+import CreateTournament from '@pages/dashboard/CreateTournament'
 import AdminPanel from '@pages/admin/AdminPanel'
-import ScorerConsole from '@pages/scorer/ScorerConsole'
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger)
@@ -102,18 +104,30 @@ function App() {
             
             {/* Protected Routes */}
             <Route path="/dashboard" element={
-              <ProtectedRoute allowedRoles={['player', 'organizer', 'scorer', 'admin']}>
+              <ProtectedRoute allowedRoles={['player', 'organizer', 'admin']}>
                 <Dashboard />
               </ProtectedRoute>
             } />
-            
-            <Route path="/scorer" element={
-              <ProtectedRoute allowedRoles={['scorer', 'admin', 'organizer']}>
-                <ScorerConsole />
+
+            <Route path="/dashboard/player" element={
+              <ProtectedRoute allowedRoles={['player', 'admin']}>
+                <PlayerDashboard />
               </ProtectedRoute>
             } />
-            
-            <Route path="/admin" element={
+
+            <Route path="/dashboard/organizer" element={
+              <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                <OrganizerDashboard />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/dashboard/organizer/create-tournament" element={
+              <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                <CreateTournament />
+              </ProtectedRoute>
+            } />
+
+            <Route path="/dashboard/admin" element={
               <ProtectedRoute allowedRoles={['admin']}>
                 <AdminPanel />
               </ProtectedRoute>

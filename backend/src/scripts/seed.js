@@ -236,7 +236,7 @@ const usersData = [
     name: 'Match Scorer',
     email: 'scorer@multisport.com',
     password: 'scorer123',
-    role: 'scorer',
+    role: 'player',
     sports: ['cricket', 'basketball']
   },
   {
@@ -413,7 +413,7 @@ const seedDatabase = async () => {
     console.log('\nSample login credentials:');
     console.log('Admin: admin@multisport.com / admin123');
     console.log('Organizer: organizer@multisport.com / organizer123');
-    console.log('Scorer: scorer@multisport.com / scorer123');
+    console.log('Player: scorer@multisport.com / scorer123');
     console.log('Player: cricket@multisport.com / player123');
 
   } catch (error) {

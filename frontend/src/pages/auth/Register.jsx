@@ -3,10 +3,8 @@ import { Link } from 'react-router-dom'
 import { useAuth } from '@contexts/AuthContext'
 
 const roleOptions = [
-  { value: 'fan', label: 'Fan' },
   { value: 'player', label: 'Player' },
   { value: 'organizer', label: 'Organizer' },
-  { value: 'scorer', label: 'Scorer' },
 ]
 
 const Register = () => {
@@ -16,7 +14,7 @@ const Register = () => {
     email: '',
     password: '',
     confirmPassword: '',
-    role: 'fan',
+    role: 'player',
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)

@@ -11,12 +11,21 @@ const Dashboard = () => {
     { title: 'Read updates', description: 'Stay current with the latest ArenaX sports coverage.', actionLabel: 'Open News', to: '/news' },
   ]
 
-  if (user?.role === 'scorer' || user?.role === 'organizer' || user?.role === 'admin') {
+  if (user?.role === 'organizer') {
     quickActions.unshift({
-      title: 'Go to scorer console',
-      description: 'Capture events, scores, and momentum changes in real time.',
-      actionLabel: 'Open Console',
-      to: '/scorer',
+      title: 'Create tournament',
+      description: 'Launch and configure a new tournament for your players.',
+      actionLabel: 'Create Tournament',
+      to: '/dashboard/organizer',
+    })
+  }
+
+  if (user?.role === 'admin') {
+    quickActions.unshift({
+      title: 'Admin controls',
+      description: 'Manage users and role assignments across the platform.',
+      actionLabel: 'Open Admin Dashboard',
+      to: '/dashboard/admin',
     })
   }
 
