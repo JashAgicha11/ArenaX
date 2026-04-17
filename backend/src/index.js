@@ -20,6 +20,9 @@ const configuredOrigins = (process.env.CORS_ORIGIN || '')
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+if (process.env.CORS_ORIGIN_PROD) {
+  configuredOrigins.push(process.env.CORS_ORIGIN_PROD);
+}
 const allowedOrigins = [...new Set([...defaultAllowedOrigins, ...configuredOrigins])];
 
 const isAllowedOrigin = (origin) => {

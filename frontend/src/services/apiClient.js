@@ -2,7 +2,7 @@ import axios from 'axios'
 
 // Create axios instance
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1',
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',
@@ -42,10 +42,10 @@ apiClient.interceptors.response.use(
         }
 
         // Call refresh token endpoint
-        const baseApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'
-        const refreshUrl = baseApiUrl.endsWith('/api/v1')
+        const baseApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api'
+        const refreshUrl = baseApiUrl.endsWith('/api')
           ? `${baseApiUrl}/auth/refresh`
-          : `${baseApiUrl}/api/v1/auth/refresh`
+          : `${baseApiUrl}/api/auth/refresh`
         const response = await axios.post(refreshUrl, { refreshToken })
 
         const { accessToken, refreshToken: newRefreshToken } = response.data
