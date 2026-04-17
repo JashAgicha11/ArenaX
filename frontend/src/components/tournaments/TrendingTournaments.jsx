@@ -46,9 +46,9 @@ const TrendingTournaments = () => {
         {tournaments.map((tournament) => (
           <div key={tournament._id || tournament.id} className="rounded-xl border border-slate-200 bg-slate-50 p-4 transition-shadow hover:shadow-lg dark:border-slate-800 dark:bg-slate-800">
             <h3 className="mb-2 text-lg font-semibold text-slate-900 dark:text-white">{tournament.name}</h3>
-            <p className="mb-1 text-slate-600 dark:text-slate-300">Sport: {tournament.sportKey}</p>
-            <p className="mb-1 text-slate-600 dark:text-slate-300">Participants: {(tournament.teams || []).length + (tournament.players || []).length}</p>
-            <p className="mb-3 text-slate-600 dark:text-slate-300">Prize: {tournament.settings?.prizePool || 'N/A'}</p>
+            <p className="mb-1 text-slate-600 dark:text-slate-300">Sport: {tournament.sport}</p>
+            <p className="mb-1 text-slate-600 dark:text-slate-300">Teams: {(tournament.teams || []).length}</p>
+            <p className="mb-3 text-slate-600 dark:text-slate-300">Matches: {(tournament.matches || []).length}</p>
             <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
               tournament.status === 'ongoing' 
                 ? 'bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300' 

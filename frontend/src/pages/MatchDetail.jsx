@@ -39,7 +39,7 @@ const MatchDetail = () => {
         {match ? (
           <>
         <div className="text-center">
-          <p className="text-sm capitalize text-primary-600 dark:text-primary-300">{match.sportKey} match</p>
+          <p className="text-sm capitalize text-primary-600 dark:text-primary-300">{match.tournamentId?.sport || 'sport'} match</p>
           <h2 className="mt-1 text-3xl font-bold text-slate-900 dark:text-white">
             {match.homeTeamId?.name || 'TBD'} vs {match.awayTeamId?.name || 'TBD'}
           </h2>

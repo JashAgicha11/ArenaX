@@ -27,6 +27,12 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'organizer', 'player'],
     default: 'player'
   },
+  playerId: {
+    type: String,
+    trim: true,
+    uppercase: true,
+    sparse: true,
+  },
   avatarUrl: {
     type: String,
     default: null
@@ -73,6 +79,7 @@ const userSchema = new mongoose.Schema({
 
 // Indexes
 userSchema.index({ email: 1 }, { unique: true });
+userSchema.index({ playerId: 1 }, { unique: true, sparse: true });
 userSchema.index({ role: 1 });
 userSchema.index({ sports: 1 });
 userSchema.index({ 'follows.players': 1 });
@@ -81,6 +88,13 @@ userSchema.index({ 'follows.teams': 1 });
 // Virtual for full name
 userSchema.virtual('fullName').get(function() {
   return this.name;
+});
+
+userSchema.pre('validate', function(next) {
+  if (this.role === 'player' && !this.playerId) {
+    return next(new Error('playerId is required for players'));
+  }
+  return next();
 });
 
 // Pre-save middleware to hash password

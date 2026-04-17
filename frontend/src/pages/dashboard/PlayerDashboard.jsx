@@ -24,16 +24,13 @@ const PlayerDashboard = () => {
   }, [])
 
   const seasonStats = useMemo(() => {
-    const sportsStats = dashboardData?.player?.statsBySport || {}
-    const firstSport = Object.keys(sportsStats)[0]
-    if (!firstSport) return {}
-    return sportsStats[firstSport]?.seasonStats || {}
+    return dashboardData?.player?.stats || {}
   }, [dashboardData])
 
   const tournamentItems = useMemo(
     () =>
       (dashboardData?.tournaments || []).map(
-        (tournament) => `${tournament.name} (${tournament.sportKey}) - ${tournament.status}`
+        (tournament) => `${tournament.name} (${tournament.sport}) - ${tournament.status}`
       ),
     [dashboardData]
   )

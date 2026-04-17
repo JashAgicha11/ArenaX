@@ -11,6 +11,7 @@ require('dotenv').config();
 const logger = require('./utils/logger');
 const connectDB = require('./config/database');
 const socketHandler = require('./socket/socketHandler');
+const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const server = createServer(app);
@@ -53,28 +54,23 @@ app.get('/health', (req, res) => {
 // API Routes
 app.use('/api/v1/auth', require('./routes/auth'));
 app.use('/api/v1/matches', require('./routes/matches'));
+app.use('/api/v1/players', require('./routes/players'));
+app.use('/api/v1/teams', require('./routes/teams'));
 app.use('/api/v1/users', require('./routes/users'));
 app.use('/api/v1/tournaments', require('./routes/tournaments'));
 // Backward-compatible aliases without version segment.
+app.use('/api/auth', require('./routes/auth'));
 app.use('/api/matches', require('./routes/matches'));
+app.use('/api/players', require('./routes/players'));
+app.use('/api/teams', require('./routes/teams'));
+app.use('/api/users', require('./routes/users'));
 app.use('/api/tournaments', require('./routes/tournaments'));
 
 // Socket.io handler
 socketHandler(io);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  logger.error(err.stack);
-  res.status(500).json({
-    error: 'Something went wrong!',
-    message: process.env.NODE_ENV === 'development' ? err.message : 'Internal server error'
-  });
-});
-
-// 404 handler
-app.use('*', (req, res) => {
-  res.status(404).json({ error: 'Route not found' });
-});
+app.use(errorHandler);
+app.use('*', notFoundHandler);
 
 const PORT = process.env.PORT || 5000;
 

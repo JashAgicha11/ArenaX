@@ -110,9 +110,9 @@ const LiveMatchesCarousel = () => {
               {/* Match Header */}
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center space-x-3">
-                  <div className={`h-3 w-3 rounded-full animate-pulse ${sportDotClasses[match.sportKey] || 'bg-primary-500'}`} />
+                  <div className={`h-3 w-3 rounded-full animate-pulse ${sportDotClasses[match.tournamentId?.sport] || 'bg-primary-500'}`} />
                   <span className="text-sm font-medium text-slate-600 uppercase tracking-wide dark:text-slate-300">
-                    {match.sportKey}
+                    {match.tournamentId?.sport}
                   </span>
                   <span className="text-sm font-medium text-emerald-600 dark:text-emerald-300">
                     {match.status}
@@ -158,7 +158,7 @@ const LiveMatchesCarousel = () => {
               <div className="flex items-center justify-between text-sm text-slate-600 dark:text-slate-400">
                 <div className="flex items-center space-x-1">
                   <MapPin className="w-4 h-4" />
-                  <span className="truncate max-w-32">{match.venue?.name || 'Venue TBA'}</span>
+                  <span className="truncate max-w-32">{match.tournamentId?.name || 'Tournament match'}</span>
                 </div>
                 <Link
                   to={`/matches/${match._id}`}

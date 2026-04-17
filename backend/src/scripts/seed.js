@@ -1,13 +1,13 @@
 const mongoose = require('mongoose');
-const bcrypt = require('bcryptjs');
 require('dotenv').config();
 
 // Import models
 const User = require('../models/User');
-const SportRules = require('../models/SportRules');
+const Player = require('../models/Player');
 const Team = require('../models/Team');
 const Tournament = require('../models/Tournament');
 const Match = require('../models/Match');
+const { generateUniquePlayerId } = require('../utils/playerId');
 
 // Connect to MongoDB
 const connectDB = async () => {
@@ -20,312 +20,36 @@ const connectDB = async () => {
   }
 };
 
-// Sport rules data
-const sportRulesData = [
-  {
-    key: 'cricket',
-    labels: {
-      name: 'Cricket',
-      shortName: 'CRI',
-      description: 'Bat and ball team sport'
-    },
-    inputsSchema: {
-      validEvents: ['ball', 'wicket', 'extra', 'over'],
-      requiredFields: ['runs', 'ballType'],
-      optionalFields: ['batsman', 'bowler', 'fielder', 'extraType']
-    },
-    scoringSchema: {
-      primaryMetric: 'runs',
-      secondaryMetrics: ['wickets', 'overs', 'extras'],
-      timeFormat: 'overs',
-      maxTime: 20
-    },
-    resultAlgoRef: 'cricket_standard',
-    playerPointAlgoRef: 'cricket_fantasy',
-    teamPointAlgoRef: 'cricket_team',
-    tieBreakers: [
-      { field: 'wickets', direction: 'desc', description: 'Wickets taken' },
-      { field: 'runRate', direction: 'desc', description: 'Run rate' }
-    ],
-    uiHints: {
-      primaryColor: '#ed7516',
-      secondaryColor: '#f1943d',
-      icon: '🏏',
-      scoringInterface: 'ball-by-ball'
-    }
-  },
-  {
-    key: 'football',
-    labels: {
-      name: 'Football',
-      shortName: 'FBL',
-      description: 'Association football/soccer'
-    },
-    inputsSchema: {
-      validEvents: ['goal', 'assist', 'card', 'substitution'],
-      requiredFields: ['eventType', 'player'],
-      optionalFields: ['minute', 'team', 'description']
-    },
-    scoringSchema: {
-      primaryMetric: 'goals',
-      secondaryMetrics: ['assists', 'cards', 'possession'],
-      timeFormat: 'minutes',
-      maxTime: 90
-    },
-    resultAlgoRef: 'football_standard',
-    playerPointAlgoRef: 'football_fantasy',
-    teamPointAlgoRef: 'football_team',
-    tieBreakers: [
-      { field: 'goalDifference', direction: 'desc', description: 'Goal difference' },
-      { field: 'goalsFor', direction: 'desc', description: 'Goals scored' }
-    ],
-    uiHints: {
-      primaryColor: '#0ea5e9',
-      secondaryColor: '#38bdf8',
-      icon: '⚽',
-      scoringInterface: 'event-based'
-    }
-  },
-  {
-    key: 'basketball',
-    labels: {
-      name: 'Basketball',
-      shortName: 'BSK',
-      description: 'Team sport with hoops'
-    },
-    inputsSchema: {
-      validEvents: ['point', 'rebound', 'assist', 'steal', 'block'],
-      requiredFields: ['eventType', 'player'],
-      optionalFields: ['quarter', 'time', 'team']
-    },
-    scoringSchema: {
-      primaryMetric: 'points',
-      secondaryMetrics: ['rebounds', 'assists', 'steals', 'blocks'],
-      timeFormat: 'quarters',
-      maxTime: 4
-    },
-    resultAlgoRef: 'basketball_standard',
-    playerPointAlgoRef: 'basketball_fantasy',
-    teamPointAlgoRef: 'basketball_team',
-    tieBreakers: [
-      { field: 'points', direction: 'desc', description: 'Total points' },
-      { field: 'fieldGoalPercentage', direction: 'desc', description: 'Field goal %' }
-    ],
-    uiHints: {
-      primaryColor: '#d946ef',
-      secondaryColor: '#e879f9',
-      icon: '🏀',
-      scoringInterface: 'period-based'
-    }
-  },
-  {
-    key: 'tennis',
-    labels: {
-      name: 'Tennis',
-      shortName: 'TNS',
-      description: 'Racket sport with courts'
-    },
-    inputsSchema: {
-      validEvents: ['point', 'game', 'set', 'ace', 'doubleFault'],
-      requiredFields: ['eventType', 'player'],
-      optionalFields: ['set', 'game', 'score']
-    },
-    scoringSchema: {
-      primaryMetric: 'sets',
-      secondaryMetrics: ['games', 'points', 'aces'],
-      timeFormat: 'sets',
-      maxTime: 3
-    },
-    resultAlgoRef: 'tennis_standard',
-    playerPointAlgoRef: 'tennis_fantasy',
-    teamPointAlgoRef: 'tennis_team',
-    tieBreakers: [
-      { field: 'sets', direction: 'desc', description: 'Sets won' },
-      { field: 'games', direction: 'desc', description: 'Games won' }
-    ],
-    uiHints: {
-      primaryColor: '#eab308',
-      secondaryColor: '#facc15',
-      icon: '🎾',
-      scoringInterface: 'set-based'
-    }
-  },
-  {
-    key: 'badminton',
-    labels: {
-      name: 'Badminton',
-      shortName: 'BDM',
-      description: 'Racket sport with shuttlecock'
-    },
-    inputsSchema: {
-      validEvents: ['point', 'game', 'set'],
-      requiredFields: ['eventType', 'player'],
-      optionalFields: ['set', 'game', 'score']
-    },
-    scoringSchema: {
-      primaryMetric: 'sets',
-      secondaryMetrics: ['games', 'points'],
-      timeFormat: 'sets',
-      maxTime: 3
-    },
-    resultAlgoRef: 'badminton_standard',
-    playerPointAlgoRef: 'badminton_fantasy',
-    teamPointAlgoRef: 'badminton_team',
-    tieBreakers: [
-      { field: 'sets', direction: 'desc', description: 'Sets won' },
-      { field: 'games', direction: 'desc', description: 'Games won' }
-    ],
-    uiHints: {
-      primaryColor: '#22c55e',
-      secondaryColor: '#4ade80',
-      icon: '🏸',
-      scoringInterface: 'set-based'
-    }
-  },
-  {
-    key: 'volleyball',
-    labels: {
-      name: 'Volleyball',
-      shortName: 'VBL',
-      description: 'Team sport with net'
-    },
-    inputsSchema: {
-      validEvents: ['point', 'set', 'serve', 'spike', 'block'],
-      requiredFields: ['eventType', 'player'],
-      optionalFields: ['set', 'team', 'description']
-    },
-    scoringSchema: {
-      primaryMetric: 'sets',
-      secondaryMetrics: ['points', 'aces', 'blocks'],
-      timeFormat: 'sets',
-      maxTime: 5
-    },
-    resultAlgoRef: 'volleyball_standard',
-    playerPointAlgoRef: 'volleyball_fantasy',
-    teamPointAlgoRef: 'volleyball_team',
-    tieBreakers: [
-      { field: 'sets', direction: 'desc', description: 'Sets won' },
-      { field: 'points', direction: 'desc', description: 'Total points' }
-    ],
-    uiHints: {
-      primaryColor: '#ef4444',
-      secondaryColor: '#f87171',
-      icon: '🏐',
-      scoringInterface: 'set-based'
-    }
-  }
-];
-
-// Users data
 const usersData = [
   {
     name: 'Admin User',
     email: 'admin@multisport.com',
     password: 'admin123',
     role: 'admin',
-    sports: ['cricket', 'football', 'basketball', 'tennis', 'badminton', 'volleyball']
   },
   {
     name: 'Tournament Organizer',
     email: 'organizer@multisport.com',
     password: 'organizer123',
-    role: 'organizer',
-    sports: ['cricket', 'football']
+    role: 'organizer'
   },
   {
-    name: 'Match Scorer',
+    name: 'Player One',
     email: 'scorer@multisport.com',
     password: 'scorer123',
-    role: 'player',
-    sports: ['cricket', 'basketball']
+    role: 'player'
   },
   {
     name: 'Cricket Player',
     email: 'cricket@multisport.com',
     password: 'player123',
-    role: 'player',
-    sports: ['cricket']
+    role: 'player'
   },
   {
     name: 'Football Player',
     email: 'football@multisport.com',
     password: 'player123',
-    role: 'player',
-    sports: ['football']
-  }
-];
-
-// Teams data
-const teamsData = [
-  {
-    name: 'Mumbai Indians',
-    sportKey: 'cricket',
-    location: 'Mumbai, India',
-    logoUrl: 'https://via.placeholder.com/150x150/ed7516/ffffff?text=MI'
-  },
-  {
-    name: 'Chennai Super Kings',
-    sportKey: 'cricket',
-    location: 'Chennai, India',
-    logoUrl: 'https://via.placeholder.com/150x150/ed7516/ffffff?text=CSK'
-  },
-  {
-    name: 'Manchester United',
-    sportKey: 'football',
-    location: 'Manchester, England',
-    logoUrl: 'https://via.placeholder.com/150x150/0ea5e9/ffffff?text=MU'
-  },
-  {
-    name: 'Liverpool FC',
-    sportKey: 'football',
-    location: 'Liverpool, England',
-    logoUrl: 'https://via.placeholder.com/150x150/0ea5e9/ffffff?text=LFC'
-  },
-  {
-    name: 'Los Angeles Lakers',
-    sportKey: 'basketball',
-    location: 'Los Angeles, USA',
-    logoUrl: 'https://via.placeholder.com/150x150/d946ef/ffffff?text=LAL'
-  },
-  {
-    name: 'Golden State Warriors',
-    sportKey: 'basketball',
-    location: 'San Francisco, USA',
-    logoUrl: 'https://via.placeholder.com/150x150/d946ef/ffffff?text=GSW'
-  }
-];
-
-// Tournaments data
-const tournamentsData = [
-  {
-    name: 'IPL 2024',
-    sportKey: 'cricket',
-    type: 'league',
-    season: '2024',
-    location: 'India',
-    startDate: new Date('2024-03-15'),
-    endDate: new Date('2024-05-15'),
-    status: 'ongoing'
-  },
-  {
-    name: 'Premier League 2024',
-    sportKey: 'football',
-    type: 'league',
-    season: '2024',
-    location: 'England',
-    startDate: new Date('2024-08-15'),
-    endDate: new Date('2025-05-15'),
-    status: 'ongoing'
-  },
-  {
-    name: 'NBA Playoffs 2024',
-    sportKey: 'basketball',
-    type: 'knockout',
-    season: '2024',
-    location: 'USA',
-    startDate: new Date('2024-04-15'),
-    endDate: new Date('2024-06-15'),
-    status: 'upcoming'
+    role: 'player'
   }
 ];
 
@@ -336,77 +60,72 @@ const seedDatabase = async () => {
 
     // Clear existing data
     await User.deleteMany({});
-    await SportRules.deleteMany({});
+    await Player.deleteMany({});
     await Team.deleteMany({});
     await Tournament.deleteMany({});
     await Match.deleteMany({});
 
     console.log('Cleared existing data');
 
-    // Create sport rules
-    const sportRules = await SportRules.insertMany(sportRulesData);
-    console.log(`Created ${sportRules.length} sport rules`);
-
-    // Create users
+    // Create users and player profiles
     const users = [];
+    const players = [];
     for (const userData of usersData) {
-      const hashedPassword = await bcrypt.hash(userData.password, 12);
+      const playerId = userData.role === 'player' ? await generateUniquePlayerId() : undefined;
       const user = new User({
         ...userData,
-        password: hashedPassword
+        playerId,
       });
       users.push(await user.save());
+
+      if (user.role === 'player') {
+        players.push(await Player.create({
+          userId: user._id,
+          playerId,
+          displayName: user.name,
+          sportPreferences: ['cricket', 'football'],
+        }));
+      }
     }
     console.log(`Created ${users.length} users`);
+    console.log(`Created ${players.length} player profiles`);
 
-    // Create teams
-    const teams = await Team.insertMany(teamsData);
+    const organizer = users.find((user) => user.role === 'organizer');
+    const tournament = await Tournament.create({
+      name: 'Premier League 2026',
+      sport: 'football',
+      organizerId: organizer._id,
+      status: 'ongoing',
+      teams: [],
+      matches: [],
+    });
+    console.log('Created 1 tournament');
+
+    const teams = await Team.insertMany([
+      { name: 'Manchester United', sport: 'football', tournamentId: tournament._id, createdBy: organizer._id, players: [players[0]._id] },
+      { name: 'Liverpool FC', sport: 'football', tournamentId: tournament._id, createdBy: organizer._id, players: [players[1]._id] },
+    ]);
+
+    await Player.updateOne({ _id: players[0]._id }, { $addToSet: { teams: teams[0]._id } });
+    await Player.updateOne({ _id: players[1]._id }, { $addToSet: { teams: teams[1]._id } });
+    await Tournament.updateOne({ _id: tournament._id }, { $set: { teams: teams.map((team) => team._id) } });
     console.log(`Created ${teams.length} teams`);
 
-    // Create tournaments
-    const tournaments = await Tournament.insertMany(tournamentsData);
-    console.log(`Created ${tournaments.length} tournaments`);
-
     // Create some sample matches
-    const matchesData = [
-      {
-        sportKey: 'cricket',
-        tournamentId: tournaments[0]._id,
-        homeTeamId: teams[0]._id,
-        awayTeamId: teams[1]._id,
-        venue: {
-          name: 'Wankhede Stadium',
-          city: 'Mumbai',
-          country: 'India'
-        },
-        scheduledAt: new Date(),
-        status: 'live',
-        metadata: {
-          matchType: 'T20',
-          weather: 'Sunny',
-          pitchCondition: 'Good'
-        }
-      },
-      {
-        sportKey: 'football',
-        tournamentId: tournaments[1]._id,
-        homeTeamId: teams[2]._id,
-        awayTeamId: teams[3]._id,
-        venue: {
-          name: 'Old Trafford',
-          city: 'Manchester',
-          country: 'England'
-        },
-        scheduledAt: new Date(Date.now() + 24 * 60 * 60 * 1000), // Tomorrow
-        status: 'upcoming',
-        metadata: {
-          matchType: '90min',
-          weather: 'Cloudy'
-        }
-      }
-    ];
-
-    const matches = await Match.insertMany(matchesData);
+    const matches = await Match.insertMany([{
+      tournamentId: tournament._id,
+      homeTeamId: teams[0]._id,
+      awayTeamId: teams[1]._id,
+      playersInvolved: [
+        { playerId: players[0]._id, teamId: teams[0]._id, role: 'forward' },
+        { playerId: players[1]._id, teamId: teams[1]._id, role: 'forward' },
+      ],
+      scoringFeed: [],
+      result: {},
+      scheduledAt: new Date(),
+      status: 'live',
+    }]);
+    await Tournament.updateOne({ _id: tournament._id }, { $set: { matches: matches.map((match) => match._id) } });
     console.log(`Created ${matches.length} matches`);
 
     console.log('Database seeding completed successfully!');

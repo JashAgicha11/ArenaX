@@ -22,19 +22,10 @@ const mongoose = require('mongoose');
 
 const matchSchema = new mongoose.Schema({
   
-  sportKey: {
-    // Identifies which sport this match belongs to.
-// Enum restriction ensures only supported sports are stored.
-
-    type: String,
-    required: true,
-    enum: ['cricket', 'football', 'basketball', 'badminton', 'tennis', 'volleyball']
-  },
-  // Reference to tournament (normalization)
-// Avoids duplication and ensures consistency
   tournamentId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Tournament'
+    ref: 'Tournament',
+    required: true,
   },
   // Referenced relationships (normalized)
 // Using ObjectId references prevents duplication of team/tournament data
@@ -42,11 +33,13 @@ const matchSchema = new mongoose.Schema({
 
   homeTeamId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Team'
+    ref: 'Team',
+    required: true,
   },
   awayTeamId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Team'
+    ref: 'Team',
+    required: true,
   },
   
   // Tracks players participating in this match.
@@ -55,23 +48,16 @@ const matchSchema = new mongoose.Schema({
   playersInvolved: [{
     playerId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Player'
+      ref: 'Player',
+      required: true,
     },
     teamId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Team'
+      ref: 'Team',
+      required: true,
     },
     role: String // 'batsman', 'bowler', 'fielder', etc.
   }],
-  venue: {
-    name: String,
-    city: String,
-    country: String,
-    coordinates: {
-      lat: Number,
-      lng: Number
-    }
-  },
   scheduledAt: {
     type: Date,
     required: true
@@ -99,19 +85,6 @@ const matchSchema = new mongoose.Schema({
       ref: 'User'
     }
   }],
-  // Precomputed match statistics.
-// Stored to avoid recalculating aggregates on every read.
-// Updated via middleware when scoringFeed changes.
-
-  statsAggregate: {
-    // Aggregated statistics for the match
-    homeTeam: mongoose.Schema.Types.Mixed,
-    awayTeam: mongoose.Schema.Types.Mixed,
-    players: [{
-      playerId: mongoose.Schema.Types.ObjectId,
-      stats: mongoose.Schema.Types.Mixed
-    }]
-  },
   result: {
     winner: {
       type: mongoose.Schema.Types.ObjectId,
@@ -122,32 +95,8 @@ const matchSchema = new mongoose.Schema({
     margin: String, // e.g., "by 5 wickets", "2-1", "25-23, 25-20, 25-18"
     completedAt: Date
   },
-  officials: {
-    scorerIds: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }],
-    umpireIds: [{
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User'
-    }]
-  },
-  metadata: {
-    // Sport-specific metadata
-    matchType: String, // 'T20', '90min', 'best-of-3', etc.
-    weather: String,
-    pitchCondition: String, // for cricket
-    attendance: Number,
-    highlights: [String]
-  },
-  isPublic: {
-    type: Boolean,
-    default: true
-  }
 }, {
-  timestamps: true,
-  toJSON: { virtuals: true },
-  toObject: { virtuals: true }
+  timestamps: true
 });
 
 // Indexes improve performance for live match filtering
@@ -157,7 +106,6 @@ const matchSchema = new mongoose.Schema({
 // - scheduledAt → used for upcoming match sorting
 // - playersInvolved.playerId → enables quick player-match lookup
 
-matchSchema.index({ sportKey: 1, status: 1 });
 matchSchema.index({ tournamentId: 1 });
 matchSchema.index({ homeTeamId: 1 });
 matchSchema.index({ awayTeamId: 1 });
@@ -182,55 +130,11 @@ matchSchema.virtual('matchTitle').get(function(){
 // Virtual for isLive
 // Convenience flag used by frontend to check live state.
 
-matchSchema.virtual('isLive').get(function() {
-  return this.status === 'live';
-});
-
-// Virtual for isCompleted
-matchSchema.virtual('isCompleted').get(function() {
-  return this.status === 'completed';
-});
-
-// Method to add scoring event
-// Adds a new scoring event to the match.
-// Designed to be atomic to maintain event ordering.
-
-matchSchema.methods.addScoringEvent = function(eventData) {
-  this.scoringFeed.push({
-    ...eventData,
-    timestamp: new Date()
-  });
-  return this.save();
-};
-
-// Method to update match status
-matchSchema.methods.updateStatus = function(newStatus) {
-  this.status = newStatus;
-  if (newStatus === 'completed') {
-    this.result.completedAt = new Date();
+matchSchema.pre('validate', function(next) {
+  if (this.homeTeamId && this.awayTeamId && this.homeTeamId.toString() === this.awayTeamId.toString()) {
+    return next(new Error('homeTeamId and awayTeamId must be different'));
   }
-  return this.save();
-};
-
-// Static method to find live matches
-matchSchema.statics.findLiveMatches = function() {
-  return this.find({ status: 'live' }).populate('homeTeamId awayTeamId tournamentId');
-};
-
-// Static method to find matches by sport
-matchSchema.statics.findBySport = function(sportKey) {
-  return this.find({ sportKey }).populate('homeTeamId awayTeamId tournamentId');
-};
-
-// Pre-save middleware to update stats
-matchSchema.pre('save', function(next) {
-  // Update aggregated stats when scoring feed changes
-  if (this.isModified('scoringFeed')) {
-    // This would call a sport-specific stats aggregator
-    // For now, we'll just mark it as modified
-    this.markModified('statsAggregate');
-  }
-  next();
+  return next();
 });
 
 module.exports = mongoose.model('Match', matchSchema); 

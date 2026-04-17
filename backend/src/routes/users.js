@@ -3,6 +3,7 @@ const User = require('../models/User');
 const Player = require('../models/Player');
 const Tournament = require('../models/Tournament');
 const Match = require('../models/Match');
+const { generateUniquePlayerId } = require('../utils/playerId');
 const { verifyToken, verifyRole } = require('../middleware/auth');
 const logger = require('../utils/logger');
 
@@ -32,7 +33,8 @@ router.post('/', verifyToken, verifyRole(['admin']), async (req, res) => {
       return res.status(400).json({ error: 'User with this email already exists.' });
     }
 
-    const user = await User.create({ name, email, password, role });
+    const playerId = role === 'player' ? await generateUniquePlayerId() : undefined;
+    const user = await User.create({ name, email, password, role, playerId });
     const userResponse = user.toObject();
     delete userResponse.password;
     delete userResponse.refreshToken;
@@ -95,7 +97,7 @@ router.delete('/:id', verifyToken, verifyRole(['admin']), async (req, res) => {
 // @access  Private (Player)
 router.get('/me/player-dashboard', verifyToken, verifyRole(['player']), async (req, res) => {
   try {
-    const player = await Player.findOne({ userId: req.user._id }).populate('teams', 'name sportKey');
+    const player = await Player.findOne({ userId: req.user._id }).populate('teams', 'name sport');
 
     if (!player) {
       return res.status(404).json({
@@ -103,29 +105,25 @@ router.get('/me/player-dashboard', verifyToken, verifyRole(['player']), async (r
       });
     }
 
-    const tournaments = await Tournament.find({ players: player._id })
-      .select('name sportKey season status startDate endDate organizerId')
+    const matchDocs = await Match.find({ 'playersInvolved.playerId': player._id }).select('tournamentId status');
+    const tournamentIds = [...new Set(matchDocs.map((match) => match.tournamentId.toString()))];
+
+    const tournaments = await Tournament.find({ _id: { $in: tournamentIds } })
+      .select('name sport status organizerId teams matches')
       .populate('organizerId', 'name email')
-      .sort({ startDate: -1 });
+      .sort({ createdAt: -1 });
 
-    const tournamentIds = tournaments.map((tournament) => tournament._id);
-    const totalMatches = await Match.countDocuments({
-      tournamentId: { $in: tournamentIds },
-      'playersInvolved.playerId': player._id
-    });
+    const totalMatches = matchDocs.length;
 
-    const liveMatches = await Match.countDocuments({
-      tournamentId: { $in: tournamentIds },
-      status: 'live',
-      'playersInvolved.playerId': player._id
-    });
+    const liveMatches = matchDocs.filter((match) => match.status === 'live').length;
 
     res.json({
       player: {
         _id: player._id,
         displayName: player.displayName,
-        sports: player.sports,
-        statsBySport: player.statsBySport,
+        playerId: player.playerId,
+        sportPreferences: player.sportPreferences,
+        stats: player.stats,
         teams: player.teams
       },
       tournaments,

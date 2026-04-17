@@ -42,10 +42,11 @@ apiClient.interceptors.response.use(
         }
 
         // Call refresh token endpoint
-        const response = await axios.post(
-          `${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/v1/auth/refresh`,
-          { refreshToken }
-        )
+        const baseApiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api/v1'
+        const refreshUrl = baseApiUrl.endsWith('/api/v1')
+          ? `${baseApiUrl}/auth/refresh`
+          : `${baseApiUrl}/api/v1/auth/refresh`
+        const response = await axios.post(refreshUrl, { refreshToken })
 
         const { accessToken, refreshToken: newRefreshToken } = response.data
 

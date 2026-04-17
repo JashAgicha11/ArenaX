@@ -10,16 +10,20 @@ const OrganizerDashboard = () => {
       <div className="mt-2 grid grid-cols-1 gap-4 lg:grid-cols-3">
         {/* Role check is enforced on route; this action is shown only on organizer/admin routes. */}
         <ActionPanel title="Create Tournament" description="Set up a new tournament with schedule and rules." actionLabel="Create Tournament" to="/dashboard/organizer/create-tournament" />
+        <ActionPanel title="Create Team" description="Create teams under your tournament." actionLabel="Create Team" to="/dashboard/organizer/create-team" />
+        <ActionPanel title="Add Player To Team" description="Attach players using unique playerId." actionLabel="Add Player" to="/dashboard/organizer/add-player" />
+      </div>
+      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        <ActionPanel title="Create Match" description="Create match fixtures between teams." actionLabel="Create Match" to="/dashboard/organizer/create-match" />
         <ActionPanel title="Manage My Tournaments" description="Update fixtures, registration, and tournament metadata." actionLabel="Manage Tournaments" to="/tournaments" />
-        <ActionPanel title="View Match Feed" description="Monitor all matches tied to your tournaments." actionLabel="Open Matches" to="/matches" />
       </div>
       <div className="mt-6">
         <DataList
           title="Organizer Checklist"
           items={[
             'Create tournament and assign start/end dates',
-            'Verify teams and participants before kickoff',
-            'Publish updates for players and followers',
+            'Create teams and add players by playerId',
+            'Create matches with valid team/player links',
           ]}
         />
       </div>

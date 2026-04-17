@@ -25,6 +25,9 @@ import Dashboard from '@pages/dashboard/Dashboard'
 import PlayerDashboard from '@pages/dashboard/PlayerDashboard'
 import OrganizerDashboard from '@pages/dashboard/OrganizerDashboard'
 import CreateTournament from '@pages/dashboard/CreateTournament'
+import CreateTeam from '@pages/dashboard/CreateTeam'
+import AddPlayerToTeam from '@pages/dashboard/AddPlayerToTeam'
+import CreateMatch from '@pages/dashboard/CreateMatch'
 import AdminPanel from '@pages/admin/AdminPanel'
 
 // Register GSAP plugins
@@ -124,6 +127,21 @@ function App() {
             <Route path="/dashboard/organizer/create-tournament" element={
               <ProtectedRoute allowedRoles={['organizer', 'admin']}>
                 <CreateTournament />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard/organizer/create-team" element={
+              <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                <CreateTeam />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard/organizer/add-player" element={
+              <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                <AddPlayerToTeam />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard/organizer/create-match" element={
+              <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                <CreateMatch />
               </ProtectedRoute>
             } />
 

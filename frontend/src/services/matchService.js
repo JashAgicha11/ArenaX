@@ -1,9 +1,8 @@
 import { apiClient } from './apiClient'
-import { dashboardService } from './dashboardService'
 
 class MatchService {
-  async getMatches() {
-    const response = await apiClient.get('/matches')
+  async getMatches(params = {}) {
+    const response = await apiClient.get('/matches', { params })
     return response.data
   }
 
@@ -12,26 +11,14 @@ class MatchService {
     return response.data
   }
 
-  async getMatchesForCurrentPlayer(user) {
-    const data = await this.getMatches()
-    const matches = data.matches || []
+  async getMyMatches() {
+    const response = await apiClient.get('/matches', { params: { scope: 'me' } })
+    return response.data
+  }
 
-    if (!user || user.role !== 'player') {
-      return matches
-    }
-
-    const dashboard = await dashboardService.getPlayerDashboard()
-    const playerId = dashboard?.player?._id
-
-    if (!playerId) {
-      return []
-    }
-
-    return matches.filter((match) =>
-      (match.playersInvolved || []).some(
-        (playerLink) => String(playerLink?.playerId) === String(playerId)
-      )
-    )
+  async createMatch(payload) {
+    const response = await apiClient.post('/matches', payload)
+    return response.data
   }
 }
 

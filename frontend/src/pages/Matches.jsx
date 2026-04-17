@@ -15,8 +15,10 @@ const Matches = () => {
       try {
         setLoading(true)
         setError('')
-        const data = await matchService.getMatchesForCurrentPlayer(user)
-        setMatches(data)
+        const data = user?.role === 'player'
+          ? await matchService.getMyMatches()
+          : await matchService.getMatches()
+        setMatches(data.matches || [])
       } catch (err) {
         setError(err.response?.data?.error || 'Failed to load matches.')
         setMatches([])
@@ -50,7 +52,7 @@ const Matches = () => {
         {matches.map((match) => (
           <PublicCard key={match._id}>
             <div className="mb-4 flex items-center justify-between">
-              <span className="text-sm capitalize text-slate-500 dark:text-slate-400">{match.sportKey}</span>
+              <span className="text-sm capitalize text-slate-500 dark:text-slate-400">{match.tournamentId?.sport || 'sport'}</span>
               <span className={`rounded-full px-3 py-1 text-xs font-semibold ${match.status === 'live' ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300' : 'bg-sky-100 text-sky-700 dark:bg-sky-900/40 dark:text-sky-300'}`}>
                 {match.status}
               </span>
