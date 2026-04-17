@@ -18,6 +18,15 @@ const CreateMatch = () => {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
+  const filteredTeams = teams.filter((team) =>
+    formData.tournamentId ? String(team.tournamentId) === String(formData.tournamentId) : true
+  )
+
+  const selectedTeamIds = [formData.homeTeamId, formData.awayTeamId].filter(Boolean)
+  const filteredPlayers = players.filter((player) =>
+    (player.teams || []).some((teamId) => selectedTeamIds.includes(String(teamId)))
+  )
+
   useEffect(() => {
     const loadDependencies = async () => {
       try {
@@ -89,14 +98,14 @@ const CreateMatch = () => {
             <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Home Team</label>
             <select name="homeTeamId" value={formData.homeTeamId} onChange={handleChange} required className="w-full rounded-xl border border-slate-300 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
               <option value="">Select home team</option>
-              {teams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
+              {filteredTeams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
             </select>
           </div>
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Away Team</label>
             <select name="awayTeamId" value={formData.awayTeamId} onChange={handleChange} required className="w-full rounded-xl border border-slate-300 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
               <option value="">Select away team</option>
-              {teams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
+              {filteredTeams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
             </select>
           </div>
         </div>
@@ -110,11 +119,11 @@ const CreateMatch = () => {
             <div key={`entry-${index}`} className="grid grid-cols-1 gap-3 md:grid-cols-3">
               <select value={entry.playerId} onChange={(event) => updatePlayerRow(index, 'playerId', event.target.value)} className="rounded-xl border border-slate-300 px-4 py-2 dark:border-slate-700 dark:bg-slate-800">
                 <option value="">Player</option>
-                {players.map((player) => <option key={player._id} value={player._id}>{player.displayName} ({player.playerId})</option>)}
+                {filteredPlayers.map((player) => <option key={player._id} value={player._id}>{player.displayName} ({player.playerId})</option>)}
               </select>
               <select value={entry.teamId} onChange={(event) => updatePlayerRow(index, 'teamId', event.target.value)} className="rounded-xl border border-slate-300 px-4 py-2 dark:border-slate-700 dark:bg-slate-800">
                 <option value="">Team</option>
-                {teams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
+                {filteredTeams.map((team) => <option key={team._id} value={team._id}>{team.name}</option>)}
               </select>
               <input value={entry.role} onChange={(event) => updatePlayerRow(index, 'role', event.target.value)} placeholder="Role (optional)" className="rounded-xl border border-slate-300 px-4 py-2 dark:border-slate-700 dark:bg-slate-800" />
             </div>

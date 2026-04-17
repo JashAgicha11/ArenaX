@@ -3,12 +3,14 @@ import { Link } from 'react-router-dom'
 import { PublicCard, PublicPageShell } from '@components/ui/PublicPageShell'
 import { useAuth } from '@contexts/AuthContext'
 import { tournamentService } from '@services/tournamentService'
+import toast from 'react-hot-toast'
 
 const Tournaments = () => {
   const { user } = useAuth()
   const [tournaments, setTournaments] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [applyingId, setApplyingId] = useState('')
 
   useEffect(() => {
     const loadTournaments = async () => {
@@ -30,6 +32,18 @@ const Tournaments = () => {
     loadTournaments()
   }, [user])
 
+  const handleApply = async (tournamentId) => {
+    try {
+      setApplyingId(tournamentId)
+      await tournamentService.applyToTournament(tournamentId)
+      toast.success('Applied to tournament successfully')
+    } catch (err) {
+      toast.error(err.response?.data?.error || 'Failed to apply to tournament')
+    } finally {
+      setApplyingId('')
+    }
+  }
+
   return (
     <PublicPageShell title="Tournaments" subtitle="Compete in pro-grade events with bracket intelligence and live progression insights.">
       {loading ? <p className="text-slate-600 dark:text-slate-300">Loading tournaments...</p> : null}
@@ -45,6 +59,16 @@ const Tournaments = () => {
             <Link to={`/tournaments/${tournament._id || tournament.id}`} className="mt-4 inline-flex rounded-xl bg-primary-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-400">
               View Details
             </Link>
+            {user?.role === 'player' ? (
+              <button
+                type="button"
+                onClick={() => handleApply(tournament._id)}
+                disabled={applyingId === tournament._id}
+                className="ml-2 mt-4 inline-flex rounded-xl border border-primary-600 px-4 py-2 text-sm font-semibold text-primary-700 transition hover:bg-primary-50 disabled:opacity-60 dark:border-primary-400 dark:text-primary-300 dark:hover:bg-primary-500/10"
+              >
+                {applyingId === tournament._id ? 'Applying...' : 'Apply'}
+              </button>
+            ) : null}
           </PublicCard>
         ))}
       </div>

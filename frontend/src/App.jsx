@@ -28,6 +28,7 @@ import CreateTournament from '@pages/dashboard/CreateTournament'
 import CreateTeam from '@pages/dashboard/CreateTeam'
 import AddPlayerToTeam from '@pages/dashboard/AddPlayerToTeam'
 import CreateMatch from '@pages/dashboard/CreateMatch'
+import TournamentApplications from '@pages/dashboard/TournamentApplications'
 import AdminPanel from '@pages/admin/AdminPanel'
 
 // Register GSAP plugins
@@ -142,6 +143,11 @@ function App() {
             <Route path="/dashboard/organizer/create-match" element={
               <ProtectedRoute allowedRoles={['organizer', 'admin']}>
                 <CreateMatch />
+              </ProtectedRoute>
+            } />
+            <Route path="/dashboard/organizer/applications" element={
+              <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                <TournamentApplications />
               </ProtectedRoute>
             } />
 

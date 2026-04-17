@@ -15,7 +15,13 @@ const listPlayers = async (req, res) => {
 
 const getPlayerById = async (req, res) => {
   try {
-    const player = await Player.findById(req.params.id).populate('userId', 'name email role playerId');
+    const player = await Player.findById(req.params.id)
+      .populate('userId', 'name email role playerId')
+      .populate({
+        path: 'teams',
+        select: 'name sport tournamentId',
+        populate: { path: 'tournamentId', select: 'name status sport' },
+      });
     if (!player) return res.status(404).json({ error: 'Player not found' });
     return res.json({ player });
   } catch (error) {

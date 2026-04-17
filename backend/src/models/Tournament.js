@@ -25,6 +25,32 @@ const tournamentSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Match'
   }],
+  applications: [{
+    playerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Player',
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ['pending', 'approved', 'rejected'],
+      default: 'pending',
+    },
+    message: {
+      type: String,
+      trim: true,
+      maxlength: 500,
+    },
+    appliedAt: {
+      type: Date,
+      default: Date.now,
+    },
+    reviewedAt: Date,
+    reviewedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
+    },
+  }],
   status: {
     type: String,
     enum: ['upcoming', 'ongoing', 'completed', 'cancelled'],
@@ -40,6 +66,7 @@ tournamentSchema.index({ sport: 1 });
 tournamentSchema.index({ organizerId: 1 });
 tournamentSchema.index({ status: 1, createdAt: -1 });
 tournamentSchema.index({ 'teams': 1 });
+tournamentSchema.index({ 'applications.playerId': 1 });
 
 // Method to add team to tournament
 tournamentSchema.methods.addTeam = function(teamId) {
