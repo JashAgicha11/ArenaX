@@ -19,6 +19,20 @@ const listTeams = async (req, res) => {
   }
 };
 
+const getTeamById = async (req, res) => {
+  try {
+    const team = await Team.findById(req.params.teamId)
+      .populate('players', 'displayName playerId stats')
+      .populate('createdBy', 'name email')
+      .populate('tournamentId', 'name sport organizerId');
+
+    if (!team) return res.status(404).json({ error: 'Team not found' });
+    return res.json({ team });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Failed to get team details' });
+  }
+};
+
 const createTeam = async (req, res) => {
   const session = await mongoose.startSession();
   session.startTransaction();
@@ -115,6 +129,7 @@ const addPlayerByPlayerId = async (req, res) => {
 
 module.exports = {
   listTeams,
+  getTeamById,
   createTeam,
   addPlayerByPlayerId,
 };

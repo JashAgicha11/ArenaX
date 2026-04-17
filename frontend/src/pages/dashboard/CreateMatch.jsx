@@ -1,15 +1,16 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import toast from 'react-hot-toast'
 import { WorkspacePageShell } from '@components/workspace/WorkspacePrimitives'
 import { dashboardService } from '@services/dashboardService'
 
 const CreateMatch = () => {
+  const { tournamentId: routeTournamentId } = useParams()
   const [tournaments, setTournaments] = useState([])
   const [teams, setTeams] = useState([])
   const [players, setPlayers] = useState([])
   const [formData, setFormData] = useState({
-    tournamentId: '',
+    tournamentId: routeTournamentId || '',
     homeTeamId: '',
     awayTeamId: '',
     scheduledAt: '',
@@ -43,7 +44,7 @@ const CreateMatch = () => {
       }
     }
     loadDependencies()
-  }, [])
+  }, [routeTournamentId])
 
   const handleChange = (event) => {
     const { name, value } = event.target
@@ -68,7 +69,7 @@ const CreateMatch = () => {
         status: 'upcoming',
       })
       toast.success('Match created successfully')
-      navigate('/matches')
+      navigate(routeTournamentId ? `/tournaments/${routeTournamentId}` : '/matches')
     } catch (error) {
       toast.error(error.message || 'Failed to create match')
     } finally {
@@ -82,7 +83,14 @@ const CreateMatch = () => {
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           <div>
             <label className="mb-2 block text-sm font-medium text-slate-700 dark:text-slate-200">Tournament</label>
-            <select name="tournamentId" value={formData.tournamentId} onChange={handleChange} required className="w-full rounded-xl border border-slate-300 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
+            <select
+              name="tournamentId"
+              value={formData.tournamentId}
+              onChange={handleChange}
+              required
+              disabled={Boolean(routeTournamentId)}
+              className="w-full rounded-xl border border-slate-300 px-4 py-3 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-800"
+            >
               <option value="">Select tournament</option>
               {tournaments.map((tournament) => <option key={tournament._id} value={tournament._id}>{tournament.name}</option>)}
             </select>

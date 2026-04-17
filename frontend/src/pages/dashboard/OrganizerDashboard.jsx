@@ -14,7 +14,7 @@ const OrganizerDashboard = () => {
         <ActionPanel title="Add Player To Team" description="Attach players using unique playerId." actionLabel="Add Player" to="/dashboard/organizer/add-player" />
       </div>
       <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-2">
-        <ActionPanel title="Create Match" description="Create match fixtures between teams." actionLabel="Create Match" to="/dashboard/organizer/create-match" />
+        <ActionPanel title="Create Match" description="Open a tournament and create match inside that tournament page." actionLabel="Go To Tournaments" to="/tournaments" />
         <ActionPanel title="Tournament Applications" description="Approve or reject player requests." actionLabel="Review Requests" to="/dashboard/organizer/applications" />
       </div>
       <div className="mt-6">

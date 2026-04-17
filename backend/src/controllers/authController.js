@@ -140,6 +140,28 @@ const logout = async (req, res) => {
 
 const me = async (req, res) => res.json({ user: sanitizeUser(req.user) });
 
+const updateMe = async (req, res) => {
+  try {
+    const { name, sportPreferences } = req.body;
+    if (typeof name === 'string' && name.trim()) {
+      req.user.name = name.trim();
+    }
+    await req.user.save();
+
+    if (req.user.role === 'player' && Array.isArray(sportPreferences)) {
+      await Player.updateOne(
+        { userId: req.user._id },
+        { $set: { sportPreferences } }
+      );
+    }
+
+    const updatedUser = await User.findById(req.user._id);
+    return res.json({ message: 'Profile updated successfully.', user: sanitizeUser(updatedUser) });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Failed to update profile.' });
+  }
+};
+
 const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
@@ -168,5 +190,6 @@ module.exports = {
   refresh,
   logout,
   me,
+  updateMe,
   changePassword,
 };

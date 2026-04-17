@@ -30,6 +30,16 @@ class TournamentService {
     const response = await apiClient.post(`/tournaments/${tournamentId}/teams`, { teamId })
     return response.data
   }
+
+  async addPlayerToTournamentTeam(tournamentId, payload) {
+    const response = await apiClient.post(`/tournaments/${tournamentId}/players`, payload)
+    return response.data
+  }
+
+  async getTournamentLeaderboard(tournamentId) {
+    const response = await apiClient.get(`/tournaments/${tournamentId}/leaderboard`)
+    return response.data
+  }
 }
 
 export const tournamentService = new TournamentService()

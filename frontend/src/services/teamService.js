@@ -11,6 +11,11 @@ class TeamService {
     return response.data
   }
 
+  async getTeamById(teamId) {
+    const response = await apiClient.get(`/teams/${teamId}`)
+    return response.data
+  }
+
   async addPlayerToTeam(teamId, playerId) {
     const response = await apiClient.post(`/teams/${teamId}/players`, { playerId })
     return response.data

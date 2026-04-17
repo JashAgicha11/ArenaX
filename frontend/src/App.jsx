@@ -145,6 +145,11 @@ function App() {
                 <CreateMatch />
               </ProtectedRoute>
             } />
+            <Route path="/tournaments/:tournamentId/create-match" element={
+              <ProtectedRoute allowedRoles={['organizer', 'admin']}>
+                <CreateMatch />
+              </ProtectedRoute>
+            } />
             <Route path="/dashboard/organizer/applications" element={
               <ProtectedRoute allowedRoles={['organizer', 'admin']}>
                 <TournamentApplications />

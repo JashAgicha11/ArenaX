@@ -76,16 +76,25 @@ class AuthService {
 
   // Handle API errors
   handleError(error) {
-    if (error.response) {
+    // Ensure error is defined
+    if (!error) {
+      return new Error('An unexpected error occurred')
+    }
+
+    if (error instanceof Error && !error.response && !error.request) {
+      return error
+    }
+
+    if (error?.response) {
       // Server responded with error status
       const message = error.response.data?.error || error.response.data?.message || 'An error occurred'
       return new Error(message)
-    } else if (error.request) {
+    } else if (error?.request) {
       // Request made but no response received
       return new Error('No response from server. Please check your connection.')
     } else {
       // Something else happened
-      return new Error(error.message || 'An unexpected error occurred')
+      return new Error(typeof error?.message === 'string' ? error.message : 'An unexpected error occurred')
     }
   }
 }

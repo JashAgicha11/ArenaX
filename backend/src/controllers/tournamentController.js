@@ -201,6 +201,110 @@ const reviewApplication = async (req, res) => {
   }
 };
 
+const addPlayerToTournamentTeam = async (req, res) => {
+  const session = await Team.startSession();
+  session.startTransaction();
+  try {
+    const { id: tournamentId } = req.params;
+    const { teamId, playerId } = req.body;
+
+    const tournament = await Tournament.findById(tournamentId).session(session);
+    if (!tournament) {
+      await session.abortTransaction();
+      return res.status(404).json({ error: 'Tournament not found' });
+    }
+
+    const isOwner = tournament.organizerId.toString() === req.user._id.toString();
+    if (req.user.role === 'organizer' && !isOwner) {
+      await session.abortTransaction();
+      return res.status(403).json({ error: 'You can only manage players in your tournaments.' });
+    }
+
+    const team = await Team.findById(teamId).session(session);
+    if (!team || team.tournamentId.toString() !== tournamentId) {
+      await session.abortTransaction();
+      return res.status(400).json({ error: 'Selected team does not belong to this tournament.' });
+    }
+
+    const player = await Player.findOne({ playerId: String(playerId || '').toUpperCase() }).session(session);
+    if (!player) {
+      await session.abortTransaction();
+      return res.status(404).json({ error: 'Player not found with this playerId' });
+    }
+
+    if (!team.players.some((id) => id.toString() === player._id.toString())) {
+      team.players.push(player._id);
+      await team.save({ session });
+    }
+
+    if (!player.teams.some((id) => id.toString() === team._id.toString())) {
+      player.teams.push(team._id);
+      await player.save({ session });
+    }
+
+    const application = tournament.applications.find((entry) => entry.playerId.toString() === player._id.toString());
+    if (application) {
+      application.status = 'approved';
+      application.reviewedAt = new Date();
+      application.reviewedBy = req.user._id;
+      await tournament.save({ session });
+    }
+
+    await session.commitTransaction();
+    return res.json({
+      message: 'Player added to tournament team successfully',
+      tournamentId,
+      teamId: team._id,
+      playerId: player.playerId,
+    });
+  } catch (error) {
+    await session.abortTransaction();
+    return res.status(500).json({ error: error.message || 'Failed to add player to tournament team' });
+  } finally {
+    session.endSession();
+  }
+};
+
+const getTournamentLeaderboard = async (req, res) => {
+  try {
+    const { id: tournamentId } = req.params;
+    const tournament = await Tournament.findById(tournamentId).select('_id name teams');
+    if (!tournament) return res.status(404).json({ error: 'Tournament not found' });
+
+    const teams = await Team.find({ _id: { $in: tournament.teams } }).select('_id name players');
+    const playerIds = [...new Set(teams.flatMap((team) => team.players.map((id) => id.toString())))];
+
+    const players = await Player.find({ _id: { $in: playerIds } })
+      .select('_id displayName playerId stats')
+      .sort({ 'stats.points': -1, 'stats.wins': -1, displayName: 1 });
+
+    const teamNameById = teams.reduce((acc, team) => {
+      acc[team._id.toString()] = team.name;
+      return acc;
+    }, {});
+
+    const leaderboard = players.map((player, index) => ({
+      rank: index + 1,
+      player: {
+        _id: player._id,
+        displayName: player.displayName,
+        playerId: player.playerId,
+      },
+      stats: player.stats,
+      teams: (player.teams || [])
+        .map((teamId) => teamNameById[teamId.toString()])
+        .filter(Boolean),
+    }));
+
+    return res.json({
+      tournament: { _id: tournament._id, name: tournament.name },
+      leaderboard,
+    });
+  } catch (error) {
+    return res.status(500).json({ error: error.message || 'Failed to build tournament leaderboard' });
+  }
+};
+
 module.exports = {
   listTournaments,
   getTournamentById,
@@ -210,4 +314,6 @@ module.exports = {
   addTeamToTournament,
   applyToTournament,
   reviewApplication,
+  addPlayerToTournamentTeam,
+  getTournamentLeaderboard,
 };
