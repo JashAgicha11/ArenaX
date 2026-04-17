@@ -15,7 +15,7 @@ const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
 const app = express();
 const server = createServer(app);
-const defaultAllowedOrigins = ['http://localhost:5173', 'http://localhost:5174'];
+const defaultAllowedOrigins = ['http://localhost:5173', 'https://arenax1.vercel.app']; // Default allowed origins for development and production
 const configuredOrigins = (process.env.CORS_ORIGIN || '')
   .split(',')
   .map((origin) => origin.trim())
