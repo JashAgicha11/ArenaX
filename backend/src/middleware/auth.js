@@ -17,8 +17,14 @@
 
 
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+const { User } = require('../models');
 const logger = require('../utils/logger');
+
+const attachCompatUser = (user) => {
+  if (!user) return user;
+  user._id = user.id;
+  return user;
+};
 
 // Verify JWT token
 const verifyToken = async (req, res, next) => {
@@ -32,7 +38,7 @@ const verifyToken = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const user = await User.findById(decoded.userId).select('-password');
+    const user = await User.findByPk(decoded.userId);
     
     if (!user) {
       return res.status(401).json({ 
@@ -40,7 +46,7 @@ const verifyToken = async (req, res, next) => {
       });
     }
 
-    req.user = user;
+    req.user = attachCompatUser(user);
     next();
   } catch (error) {
     logger.error('Token verification error:', error);
@@ -75,7 +81,7 @@ const verifyRefreshToken = async (req, res, next) => {
     }
 
     const decoded = jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET);
-    const user = await User.findById(decoded.userId).select('+refreshToken');
+    const user = await User.findByPk(decoded.userId);
     
     if (!user || user.refreshToken !== refreshToken) {
       return res.status(401).json({ 
@@ -83,7 +89,7 @@ const verifyRefreshToken = async (req, res, next) => {
       });
     }
 
-    req.user = user;
+    req.user = attachCompatUser(user);
     next();
   } catch (error) {
     logger.error('Refresh token verification error:', error);
@@ -127,9 +133,9 @@ const optionalAuth = async (req, res, next) => {
     
     if (token) {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      const user = await User.findById(decoded.userId).select('-password');
+      const user = await User.findByPk(decoded.userId);
       if (user) {
-        req.user = user;
+        req.user = attachCompatUser(user);
       }
     }
     

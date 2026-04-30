@@ -1,6 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
-const Player = require('../models/Player');
+const { User, Player } = require('../models');
 const { generateUniquePlayerId } = require('../utils/playerId');
 
 const generateTokens = (userId) => {
@@ -20,52 +19,48 @@ const generateTokens = (userId) => {
 };
 
 const sanitizeUser = (userDoc) => {
-  const user = userDoc.toObject();
+  const user = userDoc.toJSON();
   delete user.password;
   delete user.refreshToken;
+  user._id = user.id;
   return user;
 };
 
 const register = async (req, res) => {
-  const session = await User.startSession();
-  session.startTransaction();
   try {
     const { name, email, password, role = 'player', sportPreferences = [] } = req.body;
 
     const existingUser = await User.findByEmail(email);
     if (existingUser) {
-      await session.abortTransaction();
       return res.status(400).json({ error: 'User with this email already exists.' });
     }
 
     if (role === 'admin') {
-      await session.abortTransaction();
       return res.status(400).json({ error: 'Admin role cannot be assigned during registration.' });
     }
 
     const playerId = role === 'player' ? await generateUniquePlayerId() : undefined;
 
-    const [user] = await User.create([{
+    const user = await User.create({
       name,
       email,
       password,
       role,
       playerId,
-    }], { session });
+    });
 
     if (role === 'player') {
-      await Player.create([{
-        userId: user._id,
+      await Player.create({
+        userId: user.id,
         playerId,
         displayName: name,
         sportPreferences,
-      }], { session });
+      });
     }
 
-    const { accessToken, refreshToken } = generateTokens(user._id);
+    const { accessToken, refreshToken } = generateTokens(user.id);
     user.refreshToken = refreshToken;
-    await user.save({ session });
-    await session.commitTransaction();
+    await user.save();
 
     return res.status(201).json({
       message: 'User registered successfully.',
@@ -74,17 +69,14 @@ const register = async (req, res) => {
       refreshToken,
     });
   } catch (error) {
-    await session.abortTransaction();
     return res.status(500).json({ error: error.message || 'Registration failed. Please try again.' });
-  } finally {
-    session.endSession();
   }
 };
 
 const login = async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findByEmail(email).select('+password');
+    const user = await User.findByEmail(email);
 
     if (!user) {
       return res.status(401).json({ error: 'Invalid credentials.' });
@@ -95,7 +87,7 @@ const login = async (req, res) => {
       return res.status(401).json({ error: 'Invalid credentials.' });
     }
 
-    const { accessToken, refreshToken } = generateTokens(user._id);
+    const { accessToken, refreshToken } = generateTokens(user.id);
     user.refreshToken = refreshToken;
     user.lastLogin = new Date();
     await user.save();
@@ -114,7 +106,7 @@ const login = async (req, res) => {
 const refresh = async (req, res) => {
   try {
     const { user } = req;
-    const { accessToken, refreshToken } = generateTokens(user._id);
+    const { accessToken, refreshToken } = generateTokens(user.id);
     user.refreshToken = refreshToken;
     await user.save();
 
@@ -149,13 +141,13 @@ const updateMe = async (req, res) => {
     await req.user.save();
 
     if (req.user.role === 'player' && Array.isArray(sportPreferences)) {
-      await Player.updateOne(
-        { userId: req.user._id },
-        { $set: { sportPreferences } }
+      await Player.update(
+        { sportPreferences },
+        { where: { userId: req.user.id } }
       );
     }
 
-    const updatedUser = await User.findById(req.user._id);
+    const updatedUser = await User.findByPk(req.user.id);
     return res.json({ message: 'Profile updated successfully.', user: sanitizeUser(updatedUser) });
   } catch (error) {
     return res.status(500).json({ error: error.message || 'Failed to update profile.' });
@@ -165,7 +157,7 @@ const updateMe = async (req, res) => {
 const changePassword = async (req, res) => {
   try {
     const { currentPassword, newPassword } = req.body;
-    const userWithPassword = await User.findById(req.user._id).select('+password');
+    const userWithPassword = await User.findByPk(req.user.id);
     if (!userWithPassword) {
       return res.status(404).json({ error: 'User not found.' });
     }

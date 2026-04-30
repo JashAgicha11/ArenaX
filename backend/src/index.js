@@ -1,5 +1,4 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const helmet = require('helmet');
 const compression = require('compression');
@@ -9,7 +8,8 @@ const { Server } = require('socket.io');
 require('dotenv').config();
 
 const logger = require('./utils/logger');
-const connectDB = require('./config/database');
+const { connectDB, sequelize } = require('./config/database');
+require('./models');
 const socketHandler = require('./socket/socketHandler');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 
@@ -40,8 +40,7 @@ const io = new Server(server, {
   }
 });
 
-// Connect to MongoDB
-connectDB();
+const PORT = process.env.PORT || 5000;
 
 // Rate limiting
 const limiter = rateLimit({
@@ -93,11 +92,17 @@ socketHandler(io);
 app.use(errorHandler);
 app.use('*', notFoundHandler);
 
-const PORT = process.env.PORT || 5000;
+const startServer = async () => {
+  await connectDB();
+  server.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+    logger.info(`Environment: ${process.env.NODE_ENV || 'development'}`);
+  });
+};
 
-server.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-  logger.info(`Environment: ${process.env.NODE_ENV}`);
+startServer().catch((error) => {
+  logger.error('Server startup failed:', error);
+  process.exit(1);
 });
 
 // Graceful shutdown
@@ -105,7 +110,7 @@ process.on('SIGTERM', () => {
   logger.info('SIGTERM received, shutting down gracefully');
   server.close(() => {
     logger.info('Process terminated');
-    mongoose.connection.close();
+    sequelize.close();
     process.exit(0);
   });
 });
@@ -114,7 +119,7 @@ process.on('SIGINT', () => {
   logger.info('SIGINT received, shutting down gracefully');
   server.close(() => {
     logger.info('Process terminated');
-    mongoose.connection.close();
+    sequelize.close();
     process.exit(0);
   });
 }); 

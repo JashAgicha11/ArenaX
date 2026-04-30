@@ -19,10 +19,21 @@ export const SocketProvider = ({ children }) => {
   const [isConnected, setIsConnected] = useState(false)
   const [currentMatch, setCurrentMatch] = useState(null)
 
+  const resolveSocketUrl = () => {
+    const explicitSocketUrl = import.meta.env.VITE_SOCKET_URL
+    if (explicitSocketUrl) return explicitSocketUrl
+
+    const apiUrl = import.meta.env.VITE_API_URL
+    if (!apiUrl) return 'http://localhost:5000'
+
+    // Strip trailing /api from API base URL for socket connection origin.
+    return apiUrl.replace(/\/api\/?$/, '')
+  }
+
   // Initialize socket connection
   useEffect(() => {
     if (isAuthenticated() && token && !socketRef.current) {
-      socketRef.current = io(import.meta.env.VITE_API_URL || 'http://localhost:5000', {
+      socketRef.current = io(resolveSocketUrl(), {
         auth: {
           token: token
         },

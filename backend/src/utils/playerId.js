@@ -1,5 +1,5 @@
-const User = require('../models/User');
-const Player = require('../models/Player');
+const { User } = require('../models');
+const { Player } = require('../models');
 
 const randomDigits = (length = 5) => Math.floor(Math.random() * (10 ** length)).toString().padStart(length, '0');
 
@@ -11,8 +11,8 @@ const generateUniquePlayerId = async () => {
   while (attempts < 20) {
     const playerId = generatePlayerIdCandidate();
     const [userExists, playerExists] = await Promise.all([
-      User.exists({ playerId }),
-      Player.exists({ playerId }),
+      User.count({ where: { playerId } }),
+      Player.count({ where: { playerId } }),
     ]);
 
     if (!userExists && !playerExists) {
